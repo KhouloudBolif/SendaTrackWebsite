@@ -1,0 +1,228 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card card-accent-info">
+        <div class="card-header">
+          <button type="button" data-toggle="modal" (click)="modalAjouter()" *ngIf="isAddPermission" class="btn btn-outline-primary"><i
+              class="fa fa-plus-circle"></i> Ajouter intervention </button>
+          <div class="card-header-actions">
+            <app-dropdown-export (export)="exporter($event)"></app-dropdown-export>
+            <button type="button" class="card-header-action btn btn-link btn-minimize" (click)="toggleCollapse()">
+              <i class="{{ iconCollapse }}  transition"></i>
+            </button>
+            <button type="button" class="card-header-action btn btn-link btn-close" (click)="reset()">
+              <i class="icon-close"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body" [collapse]="isCollapsed" [isAnimated]="true">
+          <div class="form-group row">
+            <div class="col-md-5">
+              <my-daterangepicker #calendar [options]="myDateRangePickerOptions"></my-daterangepicker>
+            </div>
+            <div class="col-md-5">
+              <div class="controls">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fa fa-car fa-sm"></i></span>
+                  </div>
+                  <my-dropdown-select class="form-control" [placeholder]="'Sélection de véhicule'"
+                    [selectPlaceholder]="'search...'" [options]="devices" [display]="'name'" [value]="'dID'"
+                    [multiple]="false" [labelCount]="0" [selectedOptions]="selectedDevices"
+                    (selectionChange)="getSelectedDevices($event)">
+                  </my-dropdown-select>
+
+                </div>
+
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-sm btn-primary" (click)="loadData(false)" [disabled]="loading">
+                <i class="fa fa-dot-circle-o" *ngIf="!loading"></i>
+                <i class="fa fa-circle-o-notch fa-lg mr-2 fa-spin" *ngIf="loading"></i> &nbsp;Appliquer
+              </button>
+            </div>
+            <div class="form-group row" class="col-md-3">
+
+              <label class=" col-md-3 col-form-label" for="deviceID">Statut:</label>
+              <my-dropdown-select class="form-control" [placeholder]="'Statut'"
+              [selectPlaceholder]="'Chercher...'"
+              [options]="statut" [display]="'label'" [value]="'value'" [multiple]="true" [labelCount]="2"
+              [selectedOptions]="selectedstatut" (selectionChange)="getSelectedstatut($event)">
+        </my-dropdown-select>
+
+
+                <div class="input-group-append">
+
+                 </div>
+
+              </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+  <!--/.row-->
+
+
+  <div class="row">
+    <div class="col-lg-12">
+      <app-tableinterventions  (click)="loadData()" (modify)="loadModify($event)" (cloturer)="close($event)"
+      (delete)="delete($event)"  (valider)="valider($event)" (rejeter)="rejeter($event)" (reparer)="reparer($event)"  [data]="data" [isEditPermission]="isEditPermission">
+      </app-tableinterventions>
+    </div>
+  </div>
+</div>
+<!-- /.modal -->
+        <div bsModal #primaryModal="bs-modal" *ngIf="isEditPermission" [config]="{ backdrop: 'static', keyboard: false }" class="modal fade"
+          tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-primary" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Demande d'intervention</h5>
+
+                <button type="button" class="close" (click)="primaryModal.hide()" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body text-nowrap">
+                <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+                <div class="animated fadeIn">
+                  <form class="row">
+                    <!-- left col -->
+                    <div class="col-lg-6 d-flex h-full mb-md-0">
+                      <!-- info consommation -->
+                      <div class="card flex-grow-1 pb-md-0">
+                        <div class="card-body">
+                            <!-- N de fiche-->
+                            <div class="form-group row align-items-center">
+                              <label class="col-md-3 col-form-label" for="text-input">N fihce</label>
+                              <div class="col">
+                                <input type="text" id="text-input" [disabled]="'true'"
+                                  name="societe" class="form-control"   [(ngModel)]="selectedDemandeinterventions.id"
+                                  [ngModelOptions]="{standalone: true}"  />
+                              </div>
+                            </div>
+                          <!-- dates -->
+                          <div class="form-group row">
+                            <label class="col-md-3 col-form-label" for="text-input">Date</label>
+
+                            <div class="col-md-9 input-group">
+                              <input type="date" [(ngModel)]="selectedDemandeinterventions.dateString"
+                              [ngModelOptions]="{standalone: true}" class="form-control">
+                            </div>
+                          </div>
+
+                          <!-- Type de panne -->
+                          <div class="form-group row">
+                            <label class="col-md-3 col-form-label" for="select2">Type de panne</label>
+                            <div class="col input-group">
+                              <my-dropdown-select class="form-control" [placeholder]="'type panne'" [selectPlaceholder]="'search...'"
+                      [options]="typepanne" [display]="'description'" [value]="'id'" [multiple]="false" [labelCount]="0"
+                      [selectedOptions]="selectedDemandeinterventions.typepanne" (selectionChange)="getSelectedtypepanne($event)">
+                    </my-dropdown-select>
+                            </div>
+                          </div>
+
+
+
+
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- right col -->
+                    <div class="col-lg-6" style="box-sizing: border-box">
+                      <div class="card pb-md-0">
+                        <div class="card-body">
+                          <!-- type de dintervention -->
+                          <div class="form-group row">
+                            <label class="col-md-3 col-form-label" for="select2">Type intervention</label>
+                            <div class="col input-group">
+                              <my-dropdown-select class="form-control" [placeholder]="'type intervention'" [selectPlaceholder]="'search...'"
+                      [options]="typeinter" [display]="'description'" [value]="'id'" [multiple]="false" [labelCount]="0"
+                      [selectedOptions]="selectedDemandeinterventions.typeintervention" (selectionChange)="getSelectedtypeintervention($event)">
+                    </my-dropdown-select>
+                            </div>
+                          </div>
+                          <!-- Demandeur -->
+                          <div class="form-group row ">
+                            <label class="col-md-3 col-form-label" for="text-input">Demandeur</label>
+                            <div class="col">
+                              <my-dropdown-select class="form-control" [placeholder]="'Demandeur'" [selectPlaceholder]="'search...'"
+                              [options]="employees" [display]="'fullName'" [value]="'id'" [multiple]="false" [labelCount]="0"
+                              [selectedOptions]="selectedDemandeinterventions.employees" (selectionChange)="getSelectedintervention($event)">
+                            </my-dropdown-select>
+
+              </div> </div>
+<!-- Matricule -->
+<div class="form-group row">
+
+  <label class=" col-md-3 col-form-label" for="deviceID">Véhicule *</label>
+  <div  class="col">
+    <my-dropdown-select id="deviceID" class="form-control" [placeholder]="'Sélection le véhicule'"
+      [selectPlaceholder]="'search...'" [options]="devices" [display]="'name'" [value]="'dID'"
+      [multiple]="false" [labelCount]="0" [selectedOptions]="selectedDemandeinterventions.deviceID"
+      (selectionChange)="getSelectedDevicesModal($event)">
+    </my-dropdown-select>
+    <div class="input-group-append">
+     </div>
+    </div>
+  </div>
+
+                          </div>
+                        </div>
+                      </div>
+                    <!-- Description-->
+                    <div class="col-lg-12">
+                      <div class="card-body">
+                        <div class="w-100 d-flex flex-column">
+                          <label class="" for="text-input">Description</label>
+                          <div class="w-100">
+                            <p (mouseover)="afficherTexteComplet()" (mouseleave)="cacherTexteComplet()">
+                              {{ texteComplet.slice(0, 5) }} <span *ngIf="texteCompletAffiche">{{ texteComplet.slice(10) }}</span>
+                            </p>
+
+                            <input type="text" [(ngModel)]="selectedDemandeinterventions.description"
+                          [ngModelOptions]="{standalone: true}" class="form-control"
+                          placeholder="Saisir une Description"
+                          (mouseover)="afficherTexteComplet()" (mouseleave)="cacherTexteComplet()"
+                          >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- diagnostique-->
+                    <div class="col-lg-12">
+                      <div class="card-body">
+                        <div class="w-100 d-flex flex-column">
+                          <label class="" for="text-input">Diagnostique</label>
+                          <div class="w-100">
+                            <textarea type="text" id="textarea-input" rows="5"
+                              #observ name="textarea-input" class="form-control"></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-danger" (click)="primaryModal.hide()">
+                  &nbsp; Annuler
+                </button>
+                <button type="button" class="btn btn-primary" (click)="submit()">
+                  {{ mode }}
+                </button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+
+

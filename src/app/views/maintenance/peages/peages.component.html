@@ -1,0 +1,188 @@
+<div class="animated fadIn">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card card-accent-info">
+        <div class="card-header">
+          <button type="button" data-toggle="modal" *ngIf="isAddPermission" (click)="showAddModal()" class="btn btn-outline-primary"><i
+            class="fa fa-plus-circle"></i> Ajouter Peages </button>
+
+         <div class="card-header-actions">
+          <button class="btn text-primary mr-2"  >
+            <i class="fa fa-dot-circle-o" *ngIf="!loading"></i>
+            <i class="fa fa-circle-o-notch fa-lg mr-1 fa-spin" *ngIf="loading"></i> &nbsp;Actualiser
+          </button>
+          <app-dropdown-export (export)="exporter($event)"></app-dropdown-export>
+        </div>
+
+        </div>
+<!--Modal -->
+<div bsModal #primaryModal="bs-modal" *ngIf="isEditPermission" [config]="{backdrop: 'static', keyboard: false}" class="modal fade"
+tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+<div class="modal-dialog modal-primary " role="document" >
+  <div class="modal-content ">
+    <div class="modal-header ">
+      <h5 class="modal-title">{{mode}} Peages</h5>
+      <button type="button" class="close" (click)="primaryModal.hide()" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <form>
+      <div class="modal-body">
+        <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+        <div class="animated fadeIn">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="card">
+              <div class="card-header">
+                    Informations de Carte
+              </div>
+              <div class="card-body">
+                
+                <div class="form-group row">
+                  <label class=" col-md-4 col-form-label">Nº Carte *</label>
+                  <div class="col-8 input-group">
+                    <input type="text" class="form-control" [disabled]="mode=='Modifier'?'true':'false'"
+                      [(ngModel)]="selectedPeages.NumCarte" [ngModelOptions]="{standalone: true}"
+                      placeholder="Saisir Nº Carte" >
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label class="col-md-4 col-form-label" for="text-input">Type</label>
+                  <div class="col-8">
+                    <input id="s1" type="checkbox" [(ngModel)]="selectedPeages.TypeCarte"
+                      [ngModelOptions]="{standalone: true}" class="switch" />
+                    <label for="s1" class="ml-2">{{selectedPeages.TypeCarte?'Engagement':'Sans Engagement'}}
+                      &nbsp;</label>
+                  </div>
+                </div>
+             
+                <div class="form-group row">
+                  <label class="col-md-4 col-form-label" for="text-input">Plafond</label>
+                  <div class="col-8">
+                    <input type="text" class="form-control" [(ngModel)]="selectedPeages.Plafond"
+                      [ngModelOptions]="{standalone: true}" placeholder="Saisir Plafond">
+                  </div>
+                </div>
+               <div class="form-group row">
+                  <label class=" col-md-4 col-form-label" for="driverId">Conducteur</label>
+                  <div class="col-8">
+                   <my-dropdown-select id="driverId" class="form-control"
+                    [placeholder]="'Sélection le Conducteur'"
+                    [selectPlaceholder]="'search...'" [options]="drivers" name="driverId"
+                    [display]="'displayName'" [value]="'driverID'" [multiple]="false"
+                    [labelCount]="0" [selectedOptions]="selectedPeages.driverID"
+                    (selectionChange)="getSelectedDriver($event)">
+                </my-dropdown-select> 
+                
+                
+                  </div>
+                </div>
+
+                 </div>
+                </div>
+                <div class="card">
+                 
+                  <div class="card-body">
+                  <div class="form-group row">
+                  <label class=" col-md-4 col-form-label" for="fournisseur">Fournisseur</label>
+                  <div class="col-8">
+                    <my-dropdown-select class="form-control" [placeholder]="'Fournisseur'" [selectPlaceholder]="'search...'"
+                    [options]="suppliers" [display]="'Company'" [value]="'id'" [multiple]="false" [labelCount]="0"
+                    [selectedOptions]="selectedPeages.id_Contact" (selectionChange)="getSelectedSupplier($event)">
+                  
+                  </my-dropdown-select>
+                 
+                  </div>
+                 </div>
+                  </div>
+                </div>
+           
+             
+            </div>
+           
+            
+          </div>
+        </div>
+      </div>
+    </form>
+   
+    <div class="modal-footer" style="justify-content: left;display: initial;">
+      <mat-hint class="text-danger">{{errorMsg}}</mat-hint>
+      <button type="button" class="btn btn-primary float-right" (click)="submit()">{{mode}}</button>
+      <button type="button" class="btn btn-secondary float-right"
+        (click)="primaryModal.hide()">Fermer</button>
+    </div>
+  </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+</div>
+
+
+
+ <!-- second modal -->
+ <div bsModal #secondModal="bs-modal" *ngIf="isEditPermission" [config]="{backdrop: 'static', keyboard: false}"
+ class="modal fade modalWidth" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+ <div class="modal-dialog modal-primary row justify-content-center" role="document">
+   <div class="modal-content col-md-6 p-0">
+     <div class="modal-header">
+       <h5 class="modal-title">Affectation de Carte</h5>
+       <button type="button" class="close" (click)="secondModal.hide()" aria-label="Close">
+         <span aria-hidden="true">&times;</span>
+       </button>
+     </div>
+
+     <div class="modal-body">
+       <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+       <div class="animated fadeIn px-4">
+         
+        <div class="form-group row">
+          <label class=" col-md-4 col-form-label">Nº Carte *</label>
+          <div class="col-8 input-group">
+            <input type="text" class="form-control" [disabled]="mode=='Modifier'?'true':'false'"
+              [(ngModel)]="selectedPeages.NumCarte" [ngModelOptions]="{standalone: true}"
+              placeholder="Saisir Nº Carte" >
+          </div>
+        </div>
+         
+
+        <div class="form-group row">
+          <label class=" col-md-4 col-form-label" for="driverId">Conducteur</label>
+          <div class="col-8">
+           <my-dropdown-select id="driverId" class="form-control"
+            [placeholder]="'Sélection le Conducteur'"
+            [selectPlaceholder]="'search...'" [options]="drivers" name="driverId"
+            [display]="'displayName'" [value]="'driverID'" [multiple]="false"
+            [labelCount]="0" [selectedOptions]="selectedPeages.driverID"
+            (selectionChange)="getSelectedDriver($event)">
+        </my-dropdown-select> 
+        
+        
+          </div>
+        </div>
+       </div>
+     </div>
+
+     <div class="modal-footer" style="justify-content: left;display: initial;">
+       <mat-hint class="text-danger">{{errorMsg}}</mat-hint>
+       <button type="button" class="btn btn-primary float-right" (click)="submit()">{{mode}}</button>
+       <button type="button" class="btn btn-secondary float-right"
+         (click)="secondModal.hide()">Fermer</button>
+     </div>
+   </div><!-- /.modal-content -->
+ </div><!-- /.modal-dialog -->
+</div>
+
+
+      </div>
+    </div>
+  </div>
+  
+ 
+  <div class="row">
+    <div class="col-lg-12">
+      <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+      <app-peages-table (modify)="loadModify($event)" (delete)="delete($event)"  (affect)="loadAssignment($event)" [data]="data" [isEditPermission]="isEditPermission">
+      </app-peages-table>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,236 @@
+@charset "utf8"
+
+@import 'colors.scss'
+@import 'time.scss'
+
+=unselectable
+  -webkit-touch-callout: none
+  -webkit-user-select: none
+  -moz-user-select: none
+  -ms-user-select: none
+  user-select: none
+
+.capitalize
+  text-transform: capitalize
+
+.ngx-daterangepicker
+  width: 100%
+  height: auto
+  background: #FFFFFF
+  display: inline-block
+  border: 1px solid #9da3a6
+  border-radius: 7px
+  position: relative
+
+  &.is-active
+    border: 1px solid #0070ba
+
+  .input-section
+    width: calc(100% / 2)
+    height: auto
+    display: inline-block
+    float: left
+    outline: none
+    padding: 7px 10px
+    color: #2c2e2f
+    cursor: pointer
+    position: relative
+
+    &:first-child
+      border-right: 1px solid #D4DADE
+
+    .label-txt, .value-txt
+      display: inline-block
+
+    .label-txt
+      color: #0070ba
+      font-size: 11px
+
+    .value-txt
+      color: #2c2e2f
+      font-size: 13px
+      border-bottom: 1px solid transparent
+
+    .timeCss
+      border: 0
+      margin-right: 12px
+
+    .cal-icon
+      position: absolute
+      display: inline-block
+      right: 10px
+      bottom: 8px
+
+      svg
+        width: 20px
+        height: 20px
+
+        path
+          fill: #0D79B1
+
+  .calendar
+    +unselectable
+    width: auto
+    border: 1px solid #0070ba
+    border-radius: 7px
+    background: #FFFFFF
+    position: absolute
+    top: 60px
+    left: 0
+    z-index: 100000
+    display: none
+
+    &.is-opened
+      display: flex
+
+    &.is-to
+
+      .arrow
+        left: 215px
+
+    .arrow
+      position: absolute
+      display: block
+      min-width: 30px
+      min-height: 30px
+      top: -15px
+      left: 65px
+      transform: rotate(45deg)
+      border-top: 1px solid #0070ba
+      border-left: 1px solid #0070ba
+      background: #FFFFFF
+      transition: left 0.5s
+
+    .calendar-container
+      display: inline-block
+      width: 340px
+      height: 100%
+      padding: 20px
+      border-right: 1px solid #D4DADE
+      float: left
+
+      .controls
+        width: 100%
+        height: 20px
+        display: flex
+        justify-content: space-between
+        align-items: center
+
+        .control-icon
+          display: block
+          width: 12px
+          height: 20px
+          cursor: pointer
+
+        .control-title
+          font-size: 17px
+          color: #2c2e2f
+
+      .day-names
+        display: inline-block
+        width: 300px
+        margin-top: 30px
+        margin-bottom: 20px
+
+        .day-name
+          width: calc(300px / 7)
+          font-size: 13px
+          color: #9CA3A6
+          display: block
+          float: left
+          text-align: center
+          font-weight: bold
+
+      .days
+        display: inline-block
+        width: 300px
+
+        .day
+          width: calc(300px / 7)
+          font-size: 13px
+          color: #9CA3A6
+          display: block
+          float: left
+          text-align: center
+          margin-bottom: 15px
+          cursor: pointer
+          font-weight: bold
+
+          &.is-within-range
+            background: #ACD5ED
+            color: #333333
+
+          &.is-from, &.is-first-weekday
+            border-top-left-radius: 50%
+            border-bottom-left-radius: 50%
+          
+          &.is-from
+              @extend .is-within-range
+
+          &.is-to, &.is-last-weekday
+            border-top-right-radius: 50%
+            border-bottom-right-radius: 50%
+
+          .day-num
+            display: flex
+            justify-content: center
+            align-items: center
+            float: left
+            width: 42px
+            height: 42px
+            max-width: 42px
+            max-height: 42px
+            border-radius: 50%
+            padding: 10px 15px
+
+            &:hover, &.is-active
+              background: #0070ba
+              color: #FFFFFF
+
+    .side-container
+      width: 158px
+      min-height: 390px
+      padding: 10px
+      display: flex
+      align-items: center
+      position: relative
+      overflow: hidden
+      height: 100%
+
+      .side-container-buttons
+        margin-top: 64px
+        width: 200px
+        height: 100%
+        overflow-y: auto
+        overflow-x: hidden
+        height: 390px
+        position: absolute
+        padding-bottom: 10px
+        
+
+        .side-button
+          background: #FFFFFF
+          border-radius: 15px
+          border: 1px solid #0070ba
+          height: 35px
+          width: 138px
+          display: block
+          text-align: center
+          outline: none
+          margin-bottom: 15px
+          color: #6B737C
+          font-size: 11px
+          cursor: pointer
+
+          &:hover, &.is-active
+            background: #0070ba
+            color: #FFFFFF
+
+      .close-icon
+        position: absolute
+        width: 20px
+        height: 20px
+        top: 4px
+        right: 10px
+        cursor: pointer
+

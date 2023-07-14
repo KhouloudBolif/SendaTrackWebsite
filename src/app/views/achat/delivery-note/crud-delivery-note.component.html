@@ -1,0 +1,346 @@
+<div class="animated fadeIn" id="modeList">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card card-accent-info">
+        <div class="card-header">
+          <button type="button" data-toggle="card" (click)="newDeliveryNote()" *ngIf="isAddPermission"
+            class="btn btn-outline-primary"><i class="fa fa-plus-circle"></i> Ajouter un Bon de Livraison </button>
+          <div class="card-header-actions">
+            <button class="btn text-primary mr-2" (click)="loadData(true)" [disabled]="loading">
+              <i class="fa fa-dot-circle-o" *ngIf="!loading"></i>
+              <i class="fa fa-circle-o-notch fa-lg mr-1 fa-spin" *ngIf="loading"></i> &nbsp;Actualiser
+            </button>
+            <app-dropdown-export (export)="exporter($event)"></app-dropdown-export>
+          </div>
+        </div>
+        <div [collapse]="false" [isAnimated]="true" class="card-body">
+          <div class="form-group row">
+            <div class="col-xl-6 col-lg-8 col-md-12 col-sm-12 col-12">
+              <my-daterangepicker #calendar [options]="myDateRangePickerOptions"></my-daterangepicker>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+              <div class="controls">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">Facturé</span>
+                  </div>
+                  <my-dropdown-select class="form-control" [placeholder]="'Tous'" [selectPlaceholder]="'search...'"
+                    [options]="status" [display]="'billed'" [value]="'invoiced'" [multiple]="false" [labelCount]="0"
+                    [selectedOptions]="billed" (selectionChange)="getSelectedStatus($event)">
+                  </my-dropdown-select>
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i id="billed" style="cursor: pointer;" class="cil-x" (click)="clear($event)" title="Vider"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+              <div class="controls">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">Fournisseur</span>
+                  </div>
+                  <my-dropdown-select class="form-control" [placeholder]="'Tous'" [selectPlaceholder]="'search...'"
+                    [options]="suppliers" [display]="'Company'" [value]="'id'" [multiple]="false" [labelCount]="0"
+                    [selectedOptions]="supplier" (selectionChange)="getSelectedSupp($event)">
+                  </my-dropdown-select>
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i id="supplier" style="cursor: pointer;" class="cil-x" (click)="clear($event)" title="Vider"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+              <div class="controls">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">Dépôt</span>
+                  </div>
+                  <my-dropdown-select class="form-control" [placeholder]="'Tous'" [selectPlaceholder]="'search...'"
+                    [options]="stores" [display]="'description'" [value]="'id'" [multiple]="false" [labelCount]="0"
+                    [selectedOptions]="store" (selectionChange)="getSelectedStore($event)">
+                  </my-dropdown-select>
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i id="store" style="cursor: pointer;" class="cil-x" (click)="clear($event)" title="Vider"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-actions  col-xl-9 col-lg-4 col-md-6 col-sm-6 col-12">
+              <button class="btn btn-sm btn-primary  float-right ml-1" title="Vider Tous" (click)="clear($event)">
+                <i id="clearAll" class="cil-x" (click)="clear($event)"></i>
+              </button>
+              <button class="btn btn-sm btn-primary float-right" (click)="loadData(false)" [disabled]="loading">
+                <i class="fa fa-dot-circle-o" *ngIf="!loading"></i>
+                <i class="fa fa-circle-o-notch fa-lg mr-2 fa-spin" *ngIf="loading"></i> &nbsp;Appliquer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+  <!--/.row-->
+  <div class="row">
+    <div class="col-lg-12">
+      <delivery-note-table (modify)="loadModify($event)" (delete)="delete($event)" [data]="data"
+        [isEditPermission]="isEditPermission">
+      </delivery-note-table>
+    </div>
+  </div>
+</div>
+<div class="card" *ngIf="mode != 'List'">
+  <div class="card-header">
+    <button type="button" class="btn btn-outline-primary mb-1 mr-2 p-1 d-inline border-0" (click)="toModeList()">
+      <i class="icon-arrow-left fa-lg"></i>
+    </button>
+    <h6 class="d-inline">{{mode}} Bon de Livraison</h6>
+  </div>
+  <div class="card-body">
+    <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+    <div class="animated fadeIn">
+      <div class="row">
+        <div class="col-lg-6 px-1">
+          <div class="card card-accent-info">
+            <div class="form-group row px-2 pt-2">
+              <label class=" col-md-4 col-form-label" for="select1">N Bon Livraison </label>
+              <div class="col-8">
+                <input type="text" [disabled]="true" [(ngModel)]="selectedDeliveryNote.deliveryNum"
+                  [ngModelOptions]="{standalone: true}" class="form-control" placeholder="Numero Bon Livraison">
+              </div>
+            </div>
+
+            <div class="form-group row px-2">
+              <label class="col-md-4 col-form-label" for="text-input">Date Bon Livraison *</label>
+              <div class="col-8">
+                <input type="date" [(ngModel)]="selectedDeliveryNote.deliveryDateString"
+                  [ngModelOptions]="{standalone: true}" class="form-control">
+              </div>
+            </div>
+
+            <div class="form-group row px-2">
+              <label class="col-md-4 col-form-label" for="text-input">N BL Fournisseur *</label>
+              <div class="col-8">
+                <input type="text" [(ngModel)]="selectedDeliveryNote.supplierDeliveryNum"
+                  [ngModelOptions]="{standalone: true}" class="form-control" placeholder="Numero BL Fournisseur">
+              </div>
+            </div>
+
+            <div class="form-group row px-2 pb-0">
+              <label class=" col-md-4 col-form-label" for="select1">Dépôt *</label>
+              <div class="col-8 input-group">
+                <my-dropdown-select class="form-control" [placeholder]="'Dépôt'" [selectPlaceholder]="'search...'"
+                  [options]="stores" [display]="'description'" [value]="'id'" [multiple]="false" [labelCount]="0"
+                  [selectedOptions]="selectedDeliveryNote.depot" (selectionChange)="getSelectedDepot($event)">
+                </my-dropdown-select>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="col-lg-6 px-1">
+          <div *ngIf="mode =='Modifier'" class="card card-accent-info mb-3">
+            <div class="form-group row px-2 pt-2">
+              <label class=" col-md-4 col-form-label" for="select1">N réglement </label>
+              <div class="col-8">
+                <!-- <label *ngFor="let orderNum of selectedOrdersNum" class="col-form-label col-12"
+                  for="select1">{{orderNum}}</label> -->
+                <label *ngIf="true" class="row col-12 col-form-label  text-muted">
+                  Aucun Réglement pour le moment!</label>
+              </div>
+            </div>
+            <div class="form-group row px-2">
+              <label class="col-md-4 col-form-label" for="text-input">Facture Fournisseur</label>
+              <div class="col-8">
+                <input type="text" [(ngModel)]="selectedDeliveryNote.billNum" [disabled]="true"
+                  [ngModelOptions]="{standalone: true}" class="form-control" placeholder="Facture Fournisseur">
+              </div>
+            </div>
+
+          </div>
+          <div class="card card-accent-info">
+            <div class="form-group row px-2 pt-2">
+              <div class="col-md-4">
+                <label class="col-form-label" for="select1">Fournisseur *</label>
+                <button type="button" class="btn">
+                  <i class="fa fa-plus-circle"></i>
+                </button>
+              </div>
+              <div class="col-8 input-group">
+                <my-dropdown-select class="form-control" [placeholder]="'Fournisseur'" [selectPlaceholder]="'search...'"
+                  [options]="suppliers" [display]="'Company'" [value]="'id'" [multiple]="false" dis [labelCount]="0"
+                  [selectedOptions]="selectedDeliveryNote.id_Contact" (selectionChange)="getSelectedSupplier($event)"
+                  [disabled]="mode == 'Modifier'">
+                </my-dropdown-select>
+              </div>
+            </div>
+            <div class="form-group row px-2 pb-1">
+              <div class="col-md-4">
+                <label class="col-form-label" for="select1">Liste Bons Commandes</label>
+              </div>
+              <div class="col-8 input-group">
+                <my-dropdown-select class="form-control" [placeholder]="'Liste Bons Commandes'"
+                  [disabled]="mode == 'Modifier'" [selectPlaceholder]="'Chercher...'" [errorMsg]="errorMessageOrder"
+                  [showErrorMsg]="showErrorOrder" [options]="supplierOrders" [display]="'orderNum'" [value]="'id'"
+                  [multiple]="true" [labelCount]="2" [selectedOptions]="idOrders"
+                  (selectionChange)="getSelectedOrders($event)">
+                </my-dropdown-select>
+              </div>
+
+            </div>
+            <div class="form-group row px-2 pb-0">
+              <label class=" col-md-4 col-form-label"> Bons Commandes Séléctionnés</label>
+              <div class="col-8">
+                <label *ngFor="let orderNum of selectedOrdersNum" class="col-form-label col-12"
+                  for="select1">{{orderNum}}</label>
+                <label *ngIf="!selectedOrdersNum.length" class="row col-12 col-form-label  text-muted">
+                  Aucun BC estselectionné. Ajouter des BC libres ci-dessous!</label>
+                <!-- <label class="row col-md-12 col-form-label  text-muted justify-content-center" for="select1">Ajouter des BC libres ci-dessous!</label> -->
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12 px-1">
+          <div class="card card-accent-info">
+            <div class="form-group row px-2 pt-2 pb-0">
+              <label class="col-md-1 col-form-label" for="text-input">Observation</label>
+              <div class="col-11 pl-0">
+                <textarea type="text" rows="2" class="form-control"
+                  [ngModel]="selectedDeliveryNote.observation"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-12 px-1">
+          <div class="card card-accent-info">
+            <div class="card-header p-0 pt-2">
+              <div class="row col-12 p-0 m-0 align-items-center">
+                <div [ngClass]="mode=='Modifier'?'col-3 p-0':'col-2 p-0'">
+                  <button type="button" class="card-header-action btn btn-link btn-minimize" (click)="toggleCollapse()">
+                    <i class="{{ iconCollapse}}  transition"></i>
+                  </button>
+                  <label>Ref</label>
+                </div>
+                <div [ngClass]="isDisabled?'col-2 p-0 px-2':'col-3 p-0 px-2'">
+                  <label>Designation</label>
+                </div>
+
+                <div *ngIf="isDisabled" class="col-2 p-0 px-2">
+                  <label>Quantité Commandée</label>
+                </div>
+                <div *ngIf="isDisabled" class="col-2 p-0 px-2">
+                  <label>Quantité Déjà Livrée</label>
+                </div>
+                <div [ngClass]="isDisabled?'col-1 p-0 px-2':'col-2 p-0 px-2'">
+                  <label>Quantité</label>
+                </div>
+
+                <div [ngClass]="isDisabled?'col-1 p-0 px-2':'col-2 p-0 px-2'">
+                  <label>Prix</label>
+                </div>
+
+                <div [ngClass]="isDisabled?'col-1 p-0 px-2':'col-2 p-0 px-2'">
+                  <label>Remise %</label>
+                </div>
+
+                <div *ngIf="mode != 'Modifier'" class="col-1 p-0 px-2 d-flex justify-content-center">
+                  <button *ngIf="!isDisabled" type="button" title="Ajouter" class="btn btn-outline-success py-0"
+                    (click)="addDeliveryItem()">
+                    <i class="fa fa-plus-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <div *ngFor="let order of selectedDeliveryNote.deliveryItemsList; let i =index;" class="row">
+                <div class="col-lg-12">
+                  <div class="card m-0">
+                    <div class="card-header p-0">
+                      <button type="button" class="card-header-action btn btn-link btn-minimize"
+                        (click)="order.isCollapsed = !order.isCollapsed;">
+                        <i class="{{ getIconCllapsed(order.isCollapsed)}}  transition"></i>
+                      </button>
+                      <label>{{ order.orderNum }}</label>
+                    </div>
+                    <div class="card-body p-0" [collapse]="order.isCollapsed" [isAnimated]="true">
+                      <div *ngFor="let item of order.deliveryItems; let j =index;" class="row col-12 m-0 p-0">
+                        <div [ngClass]="mode=='Modifier'?'col-3 p-1':'col-2 p-1'">
+                          <my-dropdown-select class="form-control" [placeholder]="'Sélectionner'"
+                            [selectPlaceholder]="'search...'" [options]="products" [display]="'Reference'"
+                            [value]="'Reference'" [multiple]="false" [labelCount]="0" [selectedOptions]="item.Reference"
+                            (selectionChange)="productChange($event,item)" [disabled]="isDisabled">
+                          </my-dropdown-select>
+                        </div>
+                        <div [ngClass]="isDisabled?'col-2 p-1':'col-3 p-1'">
+                          <input type="text" [(ngModel)]="item.designation" [ngModelOptions]="{standalone: true}"
+                            class="form-control" placeholder="Designation" [disabled]="isDisabled">
+                        </div>
+
+                        <div *ngIf="isDisabled" class="col-2 p-1">
+                          <input type="number" min="1" class="form-control" [disabled]="true" [(ngModel)]="item.Qte"
+                            [ngModelOptions]="{standalone: true}">
+                        </div>
+                        <div *ngIf="isDisabled" class="col-2 p-1">
+                          <input type="number" min="0" class="form-control" [disabled]="true"
+                            [(ngModel)]="item.QteLivre" [ngModelOptions]="{standalone: true}">
+                        </div>
+                        <div class="col-1 p-1" [ngClass]="isDisabled?'col-1 p-1':'col-2 p-1'">
+                          <input type="number" min="1"
+                            [ngClass]="item.alert? 'form-control border-danger': 'form-control' "
+                            [(ngModel)]="item.quantity" [ngModelOptions]="{standalone: true}" (change)="calculate()">
+                        </div>
+
+                        <div [ngClass]="isDisabled?'col-1 p-1':'col-2 p-1'">
+                          <input type="number" min="0" class="form-control" [(ngModel)]="item.price"
+                            [ngModelOptions]="{standalone: true}" (change)="calculate()" [disabled]="isDisabled">
+                        </div>
+
+                        <div [ngClass]="isDisabled?'col-1 p-1':'col-2 p-1'">
+                          <input type="number" class="form-control" [(ngModel)]="item.Remise"
+                            [ngModelOptions]="{standalone: true}" [disabled]="isDisabled">
+                        </div>
+
+                        <div *ngIf="mode != 'Modifier'"
+                          class="col-1 p-1 d-flex justify-content-center align-items-center">
+                          <span>
+                            <i style="cursor: pointer;" class="cil-trash p-1 text-danger" (click)="deleteItem(i,j)"
+                              title="Supprimer"></i>
+                          </span>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+
+      </div>
+      <div class="row">
+        <mat-hint class="text-danger col-6 px-1">{{errorMsg}}</mat-hint>
+        <div class="col-6 px-1">
+          <button type="button" class="btn btn-primary float-right" (click)="submit()">{{mode}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

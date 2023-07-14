@@ -1,0 +1,249 @@
+<div *ngIf="mode == 'List'" class="animated fadeIn">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card card-accent-info">
+        <div class="card-header">
+          <button type="button" data-toggle="card" (click)="newBank()" *ngIf="isAddPermission"
+            class="btn btn-outline-primary"><i class="fa fa-plus-circle"></i> Ajouter une banque</button>
+          <div class="card-header-actions">
+            <button class="btn text-primary mr-2" (click)="loadData()" [disabled]="loading">
+              <i class="fa fa-dot-circle-o" *ngIf="!loading"></i>
+              <i class="fa fa-circle-o-notch fa-lg mr-1 fa-spin" *ngIf="loading"></i> &nbsp;Actualiser
+            </button>
+            <app-dropdown-export (export)="exporter($event)"></app-dropdown-export>
+          </div>
+        </div>
+        <!-- <div [collapse]="false" [isAnimated]="true" class="card-body">
+          <div class="form-group row float-right">
+            <div class="form-actions">
+              <button class="btn btn-sm btn-primary  ml-1" (click)="loadData()" [disabled]="loading" >
+                <i class="fa fa-dot-circle-o" *ngIf="!loading"></i>
+                <i class="fa fa-circle-o-notch fa-lg mr-2 fa-spin" *ngIf="loading"></i> &nbsp;Appliquer
+              </button>
+
+            </div>
+          </div>
+        </div> -->
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <app-bank-table (modify)="loadModify($event)" (delete)="delete($event)" [data]="data"
+        [isEditPermission]="isEditPermission">
+      </app-bank-table>
+    </div>
+  </div>
+  <!--/.row-->
+</div>
+
+<div class="card" *ngIf="mode != 'List'">
+  <div class="card-header">
+    <button type="button" class="btn btn-outline-primary mb-1 mr-2 p-1 d-inline border-0" (click)="toModeList()">
+      <i class="icon-arrow-left fa-lg"></i>
+    </button>
+    <h6 class="d-inline">{{mode}} Bank</h6>
+  </div>
+  <div class="card-body">
+    <!-- <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar> -->
+    <tabset>
+        <tab style="min-height: 200px" (selectTab)="selectTab(0)" [active]="selectedTab == 0">
+          <ng-template tabHeading><i class="icon-list mr-1"></i> Coordonnées banque&nbsp;</ng-template>
+          <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+          <div class="animated fadeIn">
+            <div class="row">
+              <div class="col-lg-6 px-1">
+                <div class="card card-accent-info">
+                  <div class="form-group row px-2 pt-2">
+                    <label class=" col-md-4 col-form-label" for="select1">Nom banque</label>
+                    <div class="col-8">
+                      <input type="text" [(ngModel)]="selectedBank.name"
+                        [ngModelOptions]="{standalone: true}" class="form-control" placeholder="Nom banque">
+                    </div>
+                  </div>
+
+                  <div class="form-group row px-2">
+                    <label class="col-md-4 col-form-label" for="text-input">R.I.B *</label>
+                    <div class="col-8">
+                      <input type="text"  [(ngModel)]="selectedBank.rib" [ngModelOptions]="{standalone: true}"
+                        class="form-control"  placeholder="RIB">
+                    </div>
+                  </div>
+
+                  <div class="form-group row  px-2">
+                    <label class=" col-md-4 col-form-label" for="text-input">Swift</label>
+                    <div class="col-8">
+                      <input type="text" [(ngModel)]="selectedBank.swift" [ngModelOptions]="{standalone: true}"
+                        class="form-control"  placeholder="Swift">
+                    </div>
+                  </div>
+                  <div class="form-group row  px-2 pb-0">
+                    <label class=" col-md-4 col-form-label" for="text-input">Iban</label>
+                    <div class="col-8">
+                      <input type="text" [(ngModel)]="selectedBank.iban" [ngModelOptions]="{standalone: true}"
+                        class="form-control"  placeholder="Iban">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 px-1">
+                <div class="card card-accent-info">
+                  <div class="form-group row px-2 pt-2">
+                    <label class=" col-md-4 col-form-label" for="select1">Ville *</label>
+                    <div class="col-8 input-group">
+                      <my-dropdown-select class="form-control" [placeholder]="'Ville'" [selectPlaceholder]="'search...'"
+                        [options]="cities" [display]="'description'" [value]="'id'" [multiple]="false" [labelCount]="0"
+                        [selectedOptions]="selectedBank.id_City" (selectionChange)="getSelectedCity($event)">
+                      </my-dropdown-select>
+                    </div>
+                  </div>
+                  <div class="form-group row px-2">
+                    <label class="col-md-4 col-form-label" for="text-input">Type édition</label>
+                    <div class="col-8 input-group">
+                      <my-dropdown-select class="form-control" [placeholder]="'Type édition'" [selectPlaceholder]="'search...'"
+                        [options]="editionTypes" [display]="'editionType'" [value]="'editionType'" [multiple]="false" [labelCount]="0"
+                        [selectedOptions]="selectedBank.editionType" (selectionChange)="getSelectedEditionType($event)">
+                      </my-dropdown-select>
+                    </div>
+                  </div>
+                  <div class="form-group row  px-2">
+                    <label class=" col-md-4 col-form-label" for="text-input">Tél1</label>
+                    <div class="col-8">
+                      <input type="text" [(ngModel)]="selectedBank.tel1" [ngModelOptions]="{standalone: true}"
+                        class="form-control"  placeholder="Tél1">
+                    </div>
+                  </div>
+                  <div class="form-group row  px-2">
+                    <label class=" col-md-4 col-form-label" for="text-input">Tél2</label>
+                    <div class="col-8">
+                      <input type="text" [(ngModel)]="selectedBank.tel2" [ngModelOptions]="{standalone: true}"
+                        class="form-control"  placeholder="Tél2">
+                    </div>
+                  </div>
+                  <div class="form-group row  px-2">
+                    <label class=" col-md-4 col-form-label" for="text-input">Fax</label>
+                    <div class="col-8">
+                      <input type="text" [(ngModel)]="selectedBank.fax" [ngModelOptions]="{standalone: true}"
+                        class="form-control"  placeholder="Fax">
+                    </div>
+                  </div>
+                  <div class="form-group row px-2 pb-0">
+                    <label class="col-md-4 col-form-label" for="text-input">Adresse</label>
+                    <div class="col-8">
+                      <textarea type="text" rows="2" class="form-control" [ngModel]="selectedBank.address"
+                      class="form-control">
+                      </textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tab>
+        <tab style="min-height: 200px"  [disabled]="mode=='Ajouter'" (selectTab)="selectTab(1)" [active]="selectedTab == 1">
+          <ng-template tabHeading><i class="icon-list mr-1"></i> Contact
+            &nbsp;</ng-template>
+          <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+          <div class="animated fadeIn">
+            <div class="card-body">
+              <input type="hidden" [(ngModel)]="selectedBP.id"
+                    [ngModelOptions]="{ standalone: true }" />
+              <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                <label class="col-md-4 col-form-label" for="text-input">Civilité</label>
+                <div class="col-8">
+                  <my-dropdown-select class="form-control" [placeholder]="'Civilité'"
+                    [selectPlaceholder]="'search...'" [options]="civilities" [display]="'display'"
+                    [value]="'value'" [multiple]="false" [labelCount]="0" [selectedOptions]="selectedBP.civility" (selectionChange)="getSelectedCivility($event)">
+                  </my-dropdown-select>
+                </div>
+              </div>
+              <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                <label class="col-md-4 col-form-label" for="text-input">Nom *</label>
+                <div class="col-8">
+                  <input type="text" [(ngModel)]="selectedBP.lastName"
+                    [ngModelOptions]="{ standalone: true }" class="form-control"
+                    placeholder="Nom" />
+                </div>
+              </div>
+              <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                <label class="col-md-4 col-form-label" for="text-input">Prénom *</label>
+                <div class="col-8">
+                  <input type="text" [(ngModel)]="selectedBP.firstName"
+                    [ngModelOptions]="{ standalone: true }" class="form-control"
+                    placeholder="Prénom" />
+                </div>
+              </div>
+              <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                <label class="col-md-4 col-form-label" for="text-input">Fonction</label>
+                <div class="col-8">
+                  <input type="text" [(ngModel)]="selectedBP.role"
+                    [ngModelOptions]="{ standalone: true }" class="form-control"
+                    placeholder="Fonction" />
+                </div>
+              </div>
+              <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                <label class="col-md-4 col-form-label" for="phone">TEL *</label>
+                <div class="col-8">
+                  <input type="tel" pattern="[0-9]{10}" [(ngModel)]="selectedBP.tel"
+                    [ngModelOptions]="{ standalone: true }" class="form-control"
+                    placeholder="+212xxxxxxxxx" required />
+                </div>
+              </div>
+              <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                <label class="col-md-4 col-form-label" for="phone">GSM</label>
+                <div class="col-8">
+                  <input type="tel" pattern="[0-9]{10}" [(ngModel)]="selectedBP.GSM"
+                    [ngModelOptions]="{ standalone: true }" class="form-control"
+                    placeholder="+212xxxxxxxxx" required />
+                </div>
+              </div>
+              <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                <label class="col-md-4 col-form-label" for="phone">FAX</label>
+                <div class="col-8">
+                  <input type="tel" pattern="[0-9]{10}" [(ngModel)]="selectedBP.fax"
+                    [ngModelOptions]="{ standalone: true }" class="form-control"
+                    placeholder="+212xxxxxxxxx" required />
+                </div>
+              </div>
+              <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                <label class="col-md-4 col-form-label" for="text-input">Email</label>
+                <div class="col-8">
+                  <input type="email" [(ngModel)]="selectedBP.email"
+                    [ngModelOptions]="{ standalone: true }" class="form-control"
+                    placeholder="xxxxxxxx@gmail.com" required />
+                </div>
+              </div>
+              <div class="form-group row col-4 d-inline-flex" style="min-width: 340px !important">
+
+                <div class="col-12 text-right">
+                    <button type="button" class="btn btn-danger col-3 mr-2" (click)="resetBP()">
+                      Annuler
+                    </button>
+                    <button type="button" class="btn btn-primary col-3" (click)="submitBP()">
+                     {{ modeBP }}
+                     </button>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-12">
+                <app-bank-person-table (modify)="loadModifyBP($event)" (delete)="deleteBP($event)" [data]="dataBP"
+                  [isEditPermission]="isEditPermission">
+                </app-bank-person-table>
+              </div>
+            </div>
+      </div>
+        </tab>
+    </tabset>
+  </div>
+  <div class="modal-footer" style="justify-content: left; display: initial">
+    <mat-hint class="text-danger">{{ errorMsg }}</mat-hint>
+    <button type="button" class="btn btn-primary float-right" *ngIf="selectedTab=='0'"  (click)="submit()">
+      {{ mode }}
+    </button>
+    <button type="button" class="btn btn-secondary float-right" (click)="toModeList()">
+      Fermer
+    </button>
+  </div>
+</div>

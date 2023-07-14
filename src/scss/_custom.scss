@@ -1,0 +1,158 @@
+// Here you can add other styles
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,700;1,100;1,300&display=swap');
+
+@import "~jsoneditor/dist/jsoneditor.min.css";
+
+@for $i from 0 through 359 {
+    .rotate-#{$i} {
+        transform: rotateZ($i+deg);
+    }
+}
+
+// .marker-transition {
+//     transition: transform 1.5s ease;
+// }
+.main .container-fluid {
+    padding: 0 10px;
+}
+
+.breadcrumb {
+    margin-bottom: 0.5rem;
+}
+
+.my-div-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.marker-transition {
+    transition: transform 1s ease;
+}
+
+.marker-selected {
+    background: url('../assets/gif/full.gif') center center;
+    background-size: 70%;
+    background-repeat: no-repeat;
+
+    // .my-icon-img {
+    //     padding: 15px;
+    //     // border-radius: 50%;
+    // }
+}
+
+.center-marker {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    z-index: 99999;
+    background: yellow;
+    top: 24px;
+    // top: calc(50% - 2.5px);
+    // left: calc(50% - 2.5px);
+}
+
+.my-icon-img {
+    position: relative;
+    margin-top: 5px;
+    // object-fit: contain;
+    height: 80%;
+    filter: drop-shadow(0px 1px 3px #3030307d)
+}
+
+.my-icon-title {
+    position: absolute;
+    white-space: nowrap;
+    height: 30%;
+    padding: 0 4px;
+    background: #fdf5f5;
+    border-radius: 6px;
+    bottom: -12px;
+    font-size: 12px;
+    /* text-shadow: -1px -1px 0 #99e9ff, -1px 1px 0 #99e9ff, 1px 1px 0 #99e9ff, 1px -1px 0 #99e9ff; */
+    color: #00508f;
+    font-weight: 700;
+    font-feature-settings: "smcp";
+    font-variant: small-caps;
+    letter-spacing: 1.5px;
+    font-family: Verdana,Arial,Tahoma,sans-serif;
+}
+.my-icon-title-Zone {
+    padding: 0 4px;
+    background: #fdf5f5;
+    font-size: 15px;
+    border-radius: 8px;
+    color: #00508f;
+    font-feature-settings: "smcp";
+    letter-spacing: 1.8px;
+    font-family: Verdana,Arial,Tahoma,sans-serif;
+}
+.zones-tabs, .plans-tabs {
+    .tab-pane {
+        min-height: 83vh;
+        padding: 10px;
+        overflow: hidden;
+
+        .card-body {
+            height: 77vh;
+            overflow-y: scroll;
+        }
+
+        form {
+            max-height: 78vh;
+            overflow-y: scroll;
+            padding-bottom: 10px;
+
+            .form-group {
+                .mat-form-field-wrapper {
+                    padding-bottom: 8px;
+                }
+
+                .mat-form-field {
+                    padding: 0 0 10px 0;
+                }
+
+                input.mat-input-element {
+                    padding-bottom: 8px;
+                }
+            }
+        }
+    }
+
+    .nav-tabs {
+        justify-content: space-between;
+    }
+}
+
+
+#leftCard {
+    .mat-form-field-wrapper {
+        padding-bottom: 12px;
+        margin-bottom: -8px;
+    }
+}
+
+div.jsoneditor-tree button.jsoneditor-contextmenu-button,div.jsoneditor-tree .jsoneditor-dragarea {
+    display: none;
+}
+
+div.jsoneditor-tree table.jsoneditor-tree{
+    margin-left: -40px;
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+
+.jsoneditor-popover, .jsoneditor-schema-error, div.jsoneditor td, div.jsoneditor textarea, div.jsoneditor th, div.jsoneditor-field, div.jsoneditor-value, pre.jsoneditor-preview {
+    font-size: 16px;
+    font-weight: 600;
+    color: grey;
+    margin-bottom: 10px;
+}
+
+.jsoneditor select, .jsoneditor-modal select {
+    padding: 2px;
+    margin-left: 15px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 600;
+}

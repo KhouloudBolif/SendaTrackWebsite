@@ -1,0 +1,369 @@
+<div class="animated fadeIn" id="modeList">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card card-accent-info">
+        <div class="card-header">
+          <button type="button" data-toggle="card" (click)="newBill()" *ngIf="isAddPermission"
+            class="btn btn-outline-primary"><i class="fa fa-plus-circle"></i> Ajouter une Facture </button>
+          <div class="card-header-actions">
+            <button class="btn text-primary mr-2" (click)="loadData(true)" [disabled]="loading">
+              <i class="fa fa-dot-circle-o" *ngIf="!loading"></i>
+              <i class="fa fa-circle-o-notch fa-lg mr-1 fa-spin" *ngIf="loading"></i> &nbsp;Actualiser
+            </button>
+            <app-dropdown-export (export)="exporter($event)"></app-dropdown-export>
+          </div>
+        </div>
+        <div [collapse]="false" [isAnimated]="true" class="card-body">
+          <div class="form-group row">
+            <div class="col-xl-6 col-lg-8 col-md-12 col-sm-12 col-12">
+              <my-daterangepicker #calendar [options]="myDateRangePickerOptions"></my-daterangepicker>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+              <div class="controls">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">Statut</span>
+                  </div>
+                  <my-dropdown-select class="form-control" [placeholder]="'Tous'" [selectPlaceholder]="'Tous'"
+                    [errorMsg]="errorMessageOrder" [showErrorMsg]="showErrorOrder" [options]="statusses"
+                    [display]="'statusName'" [value]="'status'" [multiple]="false" [labelCount]="2"
+                    [selectedOptions]="status" (selectionChange)="getSelectedStatus($event)">
+                  </my-dropdown-select>
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i id="status" style="cursor: pointer;" class="cil-x" (click)="clear($event)" title="Vider"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+              <div class="controls">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">Fournisseur</span>
+                  </div>
+                  <my-dropdown-select class="form-control" [placeholder]="'Tous'" [selectPlaceholder]="'search...'"
+                    [options]="suppliers" [display]="'Company'" [value]="'id'" [multiple]="false" [labelCount]="0"
+                    [selectedOptions]="supplier" (selectionChange)="getSelectedSupp($event)">
+                  </my-dropdown-select>
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i id="supplier" style="cursor: pointer;" class="cil-x" (click)="clear($event)" title="Vider"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-actions  col-xl-12 col-lg-8 col-md-12 col-sm-12 col-12">
+              <button class="btn btn-sm btn-primary  float-right ml-1" title="Vider Tous" (click)="clear($event)">
+                <i id="clearAll" class="cil-x" (click)="clear($event)"></i>
+              </button>
+              <button class="btn btn-sm btn-primary  float-right" (click)="loadData(false)" [disabled]="loading">
+                <i class="fa fa-dot-circle-o" *ngIf="!loading"></i>
+                <i class="fa fa-circle-o-notch fa-lg mr-2 fa-spin" *ngIf="loading"></i> &nbsp;Appliquer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+  <div class="row" *ngIf="mode == 'List'">
+    <div class="col-lg-12">
+      <app-bill-table (modify)="loadModify($event)" (delete)="delete($event)" [data]="data"
+        [isEditPermission]="isEditPermission">
+      </app-bill-table>
+    </div>
+  </div>
+  <!--/.row-->
+</div>
+
+<div class="card" *ngIf="mode != 'List'">
+  <div class="card-header">
+    <button type="button" class="btn btn-outline-primary mb-1 mr-2 p-1 d-inline border-0" (click)="reset()">
+      <i class="icon-arrow-left fa-lg"></i>
+    </button>
+    <h6 class="d-inline">{{mode}} Une Facture</h6>
+  </div>
+  <div class="card-body">
+    <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+    <div class="animated fadeIn">
+      <div class="row">
+        <div class="col-lg-6 px-1">
+          <div class="card card-accent-info mb-2">
+            <div class="form-group row px-2 pt-2">
+              <label class=" col-md-4 col-form-label" for="select1">N Facture</label>
+              <div class="col-8">
+                <input type="text" [disabled]="true" [(ngModel)]="selectedBill.billNum"
+                  [ngModelOptions]="{standalone: true}" class="form-control" placeholder="Numero de Facture">
+              </div>
+            </div>
+
+            <div class="form-group row px-2">
+              <label class="col-md-4 col-form-label" for="text-input">Date Facture *</label>
+              <div class="col-8">
+                <input type="date" [(ngModel)]="selectedBill.billDateString" required="true"
+                  [ngModelOptions]="{standalone: true}" class="form-control">
+              </div>
+            </div>
+            <div class="form-group row px-2">
+              <label class="col-md-4 col-form-label" for="text-input">Date d'échéance</label>
+              <div class="col-8">
+                <input type="date" [(ngModel)]="selectedBill.echeanceDateString" [ngModelOptions]="{standalone: true}"
+                  class="form-control">
+              </div>
+            </div>
+
+            <div class="form-group row px-2 pb-0">
+              <label class="col-md-4 col-form-label" for="text-input">N Facture Fournisseur *</label>
+              <div class="col-8">
+                <input type="text" [(ngModel)]="selectedBill.supplierBillNum" [ngModelOptions]="{standalone: true}"
+                  class="form-control" placeholder="Numero BL Fournisseur">
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="col-lg-6 px-1">
+          <div class="card card-accent-info">
+            <div class="form-group row px-2 pt-2">
+              <div class="col-md-4">
+                <label class="col-form-label" for="select1">Fournisseur *</label>
+                <button type="button" class="btn">
+                  <i class="fa fa-plus-circle"></i>
+                </button>
+              </div>
+              <div class="col-8 input-group">
+                <my-dropdown-select class="form-control" [placeholder]="'Fournisseur'" [selectPlaceholder]="'search...'"
+                  [options]="suppliers" [display]="'Company'" [value]="'id'" [multiple]="false" [labelCount]="0"
+                  [selectedOptions]="selectedBill.id_Contact" (selectionChange)="getSelectedSupplier($event)">
+                  >
+                </my-dropdown-select>
+              </div>
+            </div>
+            <div class="form-group row px-2 pb-1">
+              <div class="col-md-4">
+                <label class="col-form-label" for="select1">BLs Trouvés</label>
+              </div>
+              <div class="col-8 input-group">
+                <my-dropdown-select class="form-control" [placeholder]="'Liste Bons Commandes'"
+                  [selectPlaceholder]="'Chercher...'" [errorMsg]="errorMessageOrder" [showErrorMsg]="showErrorOrder"
+                  [options]="supplierDeliveries" [display]="'deliveryNum'" [value]="'id'" [multiple]="true"
+                  [labelCount]="2" [selectedOptions]="idDeliveries" (selectionChange)="getSelectedDeliveries($event)">
+                </my-dropdown-select>
+              </div>
+
+            </div>
+            <div class="form-group row px-2 pb-0">
+              <label class=" col-md-4 col-form-label"> BLs à facturer</label>
+              <div class="col-8">
+                <label *ngFor="let deliveryNum of selectedDeliveriesNum" class="col-form-label col-12"
+                  for="select1">{{deliveryNum}}</label>
+                <label *ngIf="!selectedDeliveriesNum.length" class="row col-12 col-form-label  text-muted">
+                  Aucun BL à
+                  facturer. Ajouter des BLs libres ci-dessous!</label>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12 px-1">
+          <div class="card card-accent-info">
+            <div class="form-group row px-2 pt-2 pb-0">
+              <label class="col-md-1 col-form-label" for="text-input">Observation</label>
+              <div class="col-11 pl-0">
+                <textarea type="text" rows="2" class="form-control" [ngModel]="selectedBill.observation"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-12 px-1">
+          <div class="card card-accent-info">
+            <div class="card-header p-0 pt-2">
+              <div class="row col-12 p-0 m-0 align-items-center">
+                <div class="col-2 p-0">
+                  <button type="button" class="card-header-action btn btn-link btn-minimize" (click)="toggleCollapse()">
+                    <i class="{{ iconCollapse}}  transition"></i>
+                  </button>
+                  <label>Ref</label>
+                </div>
+
+                <div class="col-3 p-0 px-2">
+                  <label>Designation</label>
+                </div>
+
+                <div class="col-1 p-0 px-2">
+                  <label>Qté Facturée</label>
+                </div>
+                <div class="col-1 p-0 px-2">
+                  <label>Prix HT</label>
+                </div>
+                <div class="col-1 p-0 px-2">
+                  <label>TVA %</label>
+                </div>
+
+                <div class="col-1 p-0 px-2">
+                  <label>Remise %</label>
+                </div>
+                <div class="col-1 p-0 px-2">
+                  <label>Total HT</label>
+                </div>
+                <div class="col-1 p-0 px-2">
+                  <label>Total TTC</label>
+                </div>
+
+                <div class="col-1 p-0 px-2 d-flex justify-content-center align-items-center">
+                  <button type="button" title="Ajouter BL Libre" class="btn btn-outline-success py-0 mr-1"
+                    (click)="addBillItem()">
+                    <i class="fa fa-plus-circle"></i>
+                  </button>
+                  <button type="button" title="Supprimer tous" class="btn btn-outline-danger py-0"
+                    (click)="resetListItem()">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <div *ngFor="let delivery of selectedBill.billItemsList; let i =index;" class="row">
+                <div class="col-lg-12">
+                  <div class="card m-0">
+                    <div class="card-header p-0">
+                      <button type="button" class="card-header-action btn btn-link btn-minimize"
+                        (click)="delivery.isCollapsed = !delivery.isCollapsed;">
+                        <i class="{{ getIconCllapsed(delivery.isCollapsed)}}  transition"></i>
+                      </button>
+                      <label>{{ delivery.deliveryNum}}</label>
+                      <span class="col-1 float-right p-0 pl-1 d-flex justify-content-center align-items-center">
+                        <i style="cursor: pointer; color:#73818F" class="fa fa-trash p-0 mt-1"
+                          (click)="deleteItemList(i)" title="Supprimer BLs"></i>
+                      </span>
+                    </div>
+                    <div class="card-body p-0" [collapse]="delivery.isCollapsed" [isAnimated]="true">
+                      <div *ngFor="let item of delivery.billItems; let j = index" class="row col-12 m-0 p-0">
+                        <div class="col-2 p-1">
+                          <my-dropdown-select class="form-control" [disabled]="i!=0" [placeholder]="'Sélectionner'"
+                            [selectPlaceholder]="'search...'" [options]="products" [display]="'Reference'"
+                            [value]="'Reference'" [multiple]="false" [labelCount]="0" [selectedOptions]="item.Reference"
+                            (selectionChange)="productChange($event,item)">
+                          </my-dropdown-select>
+                        </div>
+                        <div class="col-3 p-1">
+                          <input type="text" [disabled]="i!=0" [(ngModel)]="item.designation"
+                            [ngModelOptions]="{standalone: true}" class="form-control" placeholder="Designation">
+                        </div>
+
+                        <div class="col-1 p-1">
+                          <input type="number" [disabled]="i!=0" min="1" class="form-control"
+                            [(ngModel)]="item.quantity" [ngModelOptions]="{standalone: true}" (change)="calculate()">
+                        </div>
+
+                        <div class="col-1 p-1">
+                          <input type="number" [disabled]="i!=0" min="0" class="form-control" [(ngModel)]="item.price"
+                            [ngModelOptions]="{standalone: true}" (change)="calculate()">
+                        </div>
+                        <div class="col-1 p-1">
+                          <input type="number" [disabled]="i!=0" class="form-control" [(ngModel)]="item.TVA"
+                            [ngModelOptions]="{standalone: true}" (change)="calculate()">
+                        </div>
+
+                        <div class="col-1 p-1">
+                          <input type="number" [disabled]="i!=0" class="form-control" [(ngModel)]="item.Remise"
+                            [ngModelOptions]="{standalone: true}" (change)="calculate()">
+                        </div>
+                        <div class="col-1 p-1">
+                          <input type="number" [disabled]="i!=0" min="0" class="form-control" [(ngModel)]="item.totalHT"
+                            [ngModelOptions]="{standalone: true}">
+                        </div>
+                        <div class="col-1 p-1">
+                          <input type="number" [disabled]="i!=0" min="0" class="form-control"
+                            [(ngModel)]="item.totalTTC" [ngModelOptions]="{standalone: true}">
+                        </div>
+
+                        <div class="col-1 p-0  pl-1 d-flex justify-content-center align-items-center">
+                          <span *ngIf="i==0">
+                            <i style="cursor: pointer;" class="cil-trash p-1 text-danger" (click)="deleteItem(j)"
+                              title="Supprimer"></i>
+                          </span>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+
+      </div>
+      <div class="row">
+        <div class="col-lg-12 ">
+          <div class="card card-accent-info row">
+            <div class="card-body ">
+              <div class="row col-12 d-flex">
+
+                <div class="col ">
+                  <div class="form-group row align-items-center">
+                    <label class=" col-md-5 col-form-label p-0 px-2" for="select1">Total HT</label>
+                    <div class="col-7 m-0 p-0">
+                      <input type="number" [disabled]="true" [(ngModel)]="selectedBill.totalHT"
+                        [ngModelOptions]="{standalone: true}" class="form-control">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-1"></div>
+                <div class="col">
+                  <div class="form-group row align-items-center">
+                    <label class=" col-md-5 col-form-label p-0 px-2" for="select1">Total TVA</label>
+                    <div class="col-7 m-0 p-0">
+                      <input type="number" [disabled]="true" [(ngModel)]="selectedBill.totalTVA"
+                        [ngModelOptions]="{standalone: true}" class="form-control">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-1"></div>
+                <div class="col">
+                  <div class="form-group row align-items-center">
+                    <label class=" col-md-5 col-form-label p-0 px-2" for="select1">Remise Total</label>
+                    <div class="col-7 m-0 p-0">
+                      <input type="number" [disabled]="true" [(ngModel)]="selectedBill.totalRemise"
+                        [ngModelOptions]="{standalone: true}" class="form-control">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-1"></div>
+                <div class="col mr-0 pr-0">
+                  <div class="form-group row align-items-center">
+                    <label class=" col-md-5 col-form-label p-0 px-2" for="select1">Total TTC</label>
+                    <div class="col-7 m-0 p-0">
+                      <input type="number" [disabled]="true" [(ngModel)]="selectedBill.totalTTC"
+                        [ngModelOptions]="{standalone: true}" class="form-control">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <mat-hint class="text-danger col-6 px-1"> {{errorMsg}}</mat-hint>
+        <!-- <mat-hint class="text-danger col-6 px-1"> <label  [ngModel]="errorMsg">{{errorMsg}}</label></mat-hint> -->
+        <div class="col-6 px-1">
+          <button type="button" class="btn btn-primary float-right" (click)="submit()">{{mode}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

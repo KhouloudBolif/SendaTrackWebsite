@@ -1,0 +1,550 @@
+
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card card-accent-info">
+        <div class="card-header">
+          <button type="button" data-toggle="modal" *ngIf="isAddPermission" (click)="showAddModal()"
+            class="btn btn-outline-primary">
+            <i class="fa fa-plus-circle"></i> Ajouter Contact
+          </button>
+          <div class="card-header-actions">
+            <app-dropdown-export (export)="exporter($event)"></app-dropdown-export>
+            <button type="button" class="card-header-action btn btn-link btn-minimize" (click)="toggleCollapse()">
+              <i class="{{ iconCollapse }}  transition"></i>
+            </button>
+            <button type="button" class="card-header-action btn btn-link btn-close">
+              <i class="icon-close"></i>
+            </button>
+          </div>
+        </div>
+        <div bsModal #primaryModal="bs-modal" *ngIf="isEditPermission"
+          [config]="{ backdrop: 'static', keyboard: false }" class="modal fade" tabindex="-1" role="dialog"
+          aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-primary" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">{{ mode }} Contact</h5>
+                <button type="button" class="close" (click)="primaryModal.hide()" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <tabset>
+                  <!-- <div class="row">
+                    <div class="col-md-12">
+                      <alert type="success" onClosed="dismissedAlert" *ngIf="openAlert" dismissOnTimeout="5000">
+                        Modification effectuée avec succes</alert>
+                    </div>
+                  </div> -->
+                  <tab style="min-height: 600px" (selectTab)="selectTab(0)" [active]="selectedTab == 0">
+                    <ng-template tabHeading><i class="icon-list mr-1"></i> Coordonnées société
+                      &nbsp;</ng-template>
+                    <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+                    <div class="animated fadeIn">
+                      <div class="row">
+                        <div class="col-lg-6">
+                          <div class="card-body">
+                              <input type="hidden" [(ngModel)]="selectedContact.id"
+                                  [ngModelOptions]="{ standalone: true }" />
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">Type Contact</label>
+                              <div class="col-4">
+                                <input id="s1" type="checkbox" [(ngModel)]="typeContact[0].status"
+                                  [ngModelOptions]="{ standalone: true }" class="switch" />
+                                <label for="s1" class="ml-2">Client&nbsp;</label>
+                              </div>
+                              <div class="col-4">
+                                <input id="s1" type="checkbox" [(ngModel)]="typeContact[1].status"
+                                  [ngModelOptions]="{ standalone: true }" class="switch" />
+                                <label for="s1" class="ml-2">Fournisseur&nbsp;</label>
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">Actif</label>
+                              <div class="col-8">
+                                <input id="s1" type="checkbox" [(ngModel)]="selectedContact.IsActive"
+                                  [ngModelOptions]="{ standalone: true }" class="switch" />
+                                <label for="s1" class="ml-2">{{
+                                  selectedContact.IsActive
+                                  ? "Activé"
+                                  : "Désactivé"
+                                  }}
+                                  &nbsp;</label>
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="select1">Raison Sociale *</label>
+                              <div class="col-8">
+                                <input type="text" [disabled]="
+                                    mode == 'Modifier' ? 'true' : 'false'
+                                  " [(ngModel)]="selectedContact.Company" [ngModelOptions]="{ standalone: true }"
+                                  class="form-control" placeholder="Saisir nom de société " required />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">Adresse</label>
+                              <div class="col-8">
+                               <!--  <input type="text" [(ngModel)]="selectedContact.Address"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Saisir l'adresse" required /> -->
+                                <input placeholder="Saisir l'adresse" autocorrect="off" autocapitalize="off"
+                                  spellcheck="off" type="text" class="form-control" #search />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">Ville</label>
+                              <div class="col input-group">
+                                <my-dropdown-select class="form-control" [placeholder]="'Ville Selection'"
+                                  [selectPlaceholder]="'search...'" [options]="devices" [display]="'name'"
+                                  [value]="'dID'" [multiple]="false" [labelCount]="0"
+                                  [selectedOptions]="selectedDeviceModalOption" (selectionChange)="
+                                    getSelectedDeviceModal($event)
+                                  ">
+                                </my-dropdown-select>
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">Code Postal</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedContact.CodePostal"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control" />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="phone">TEL 1</label>
+                              <div class="col-8">
+                                <input type="tel" pattern="[0-9]{10}" [(ngModel)]="selectedContact.Tel1"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="+212xxxxxxxxx" required />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="phone">TEL 2</label>
+                              <div class="col-8">
+                                <input type="tel" pattern="[0-9]{10}" [(ngModel)]="selectedContact.Tel2"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="+212*********" required />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="phone">GSM</label>
+                              <div class="col-8">
+                                <input type="tel" pattern="[0-9]{10}" [(ngModel)]="selectedContact.GSM"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="+212xxxxxxxxx" required />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="phone">FAX</label>
+                              <div class="col-8">
+                                <input type="tel" pattern="[0-9]{10}" [(ngModel)]="selectedContact.Fax"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="+212xxxxxxxxx" required />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">Email
+                              </label>
+                              <div class="col-8">
+                                <input type="email" [(ngModel)]="selectedContact.Email"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="xxxxxxxx@gmail.com" required />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">site Internet</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedContact.WebSite"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="www.*******.com" />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">ICE</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedContact.ICE"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Saisir ICE" />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">Banque</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedContact.Banque"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Nom de la Banque" />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">Num Compte Banque</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedContact.CompteBank"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control" placeholder="RIB" />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">Observation</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedContact.Observation"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Saisir une Observation" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-6">
+                          <div class="card-body" *ngIf="typeContact[0].status">
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">Famille Client</label>
+                              <div class="col input-group">
+                                <my-dropdown-select class="form-control" [placeholder]="'Famille Selection'"
+                                  [selectPlaceholder]="'search...'" [options]="selectedFieldModal[0].data"
+                                  [display]="'description'" [value]="'id'" [multiple]="false" [labelCount]="0"
+                                  [selectedOptions]="
+                                    selectedFieldModal[0].selected
+                                  " (selectionChange)="
+                                    getSelectedFamilleClient($event)
+                                  ">
+                                </my-dropdown-select>
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">Secteurs d'Activite</label>
+                              <div class="col input-group">
+                                <my-dropdown-select class="form-control" [placeholder]="'Secteurs Selection'"
+                                  [selectPlaceholder]="'search...'" [options]="selectedFieldModal[1].data"
+                                  [display]="'description'" [value]="'id'" [multiple]="false" [labelCount]="0"
+                                  [selectedOptions]="
+                                    selectedFieldModal[1].selected
+                                  " (selectionChange)="
+                                    getSelectedSecteursActivite($event)
+                                  ">
+                                </my-dropdown-select>
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">Forme Juridique</label>
+                              <div class="col input-group">
+                                <my-dropdown-select class="form-control" [placeholder]="'Type de la société'"
+                                  [selectPlaceholder]="'search...'" [options]="cts.FormeJuridique" [display]="'name'"
+                                  [value]="'name'" [multiple]="false" [labelCount]="0" [selectedOptions]="
+                                    selectedFieldModal[2].selected
+                                  " (selectionChange)="
+                                    getSelectedFormeJuridique($event)
+                                  ">
+                                </my-dropdown-select>
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">IF</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedContact.IF"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Saisir identifiant fiscal" />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">RC</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedContact.RC"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Saisir N° RC" />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">CNSS</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedContact.CNSS"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Saisir N° CNSS" />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">N° Patente</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedContact.NumPatente"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Saisir N° Patente" />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">Commercial</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedContact.Commercial"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Saisir nom prénom du Commercial" />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">Délai de Paiement</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedContact.Payment_deadline"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Délai de Paiement (jour)" />
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <label class="col-md-4 col-form-label" for="text-input">Plafond de Crédit (DH)</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedContact.Credit_Cap"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Plafond de Crédit (DH)" />
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-lg-12" *ngIf="typeContact[1].status">
+                            <div class="form-group row">
+                              <label class="col-4 col-form-label" for="text-input">Type Fournisseur</label>
+                              <div class="col input-group">
+                                <my-dropdown-select class="form-control" [placeholder]="'Type Fournisseur Selection'"
+                                  [selectPlaceholder]="'search...'" [options]="selectedFieldModal[3].data"
+                                  [display]="'description'" [value]="'id'" [multiple]="false" [labelCount]="0"
+                                  [selectedOptions]="
+                                    selectedFieldModal[3].selected
+                                  " (selectionChange)="
+                                    getSelectedTypeFournisseur($event)
+                                  ">
+                                </my-dropdown-select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </tab>
+                  <tab style="min-height: 600px"  [disabled]="mode=='Ajouter'" (selectTab)="selectTab(1)" [active]="selectedTab == 1">
+                    <ng-template tabHeading><i class="icon-list mr-1"></i> Contact
+                      &nbsp;</ng-template>
+                    <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+                    <div class="animated fadeIn">
+                          <div class="card-body">
+                            <input type="hidden" [(ngModel)]="selectedTelContact.id"
+                                  [ngModelOptions]="{ standalone: true }" />
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                              <label class="col-md-4 col-form-label" for="text-input">Civilité</label>
+                              <div class="col-8">
+                                <my-dropdown-select class="form-control" [placeholder]="'Civilité'"
+                                  [selectPlaceholder]="'search...'" [options]="cts.Civility" [display]="'name'"
+                                  [value]="'name'" [multiple]="false" [labelCount]="0" [selectedOptions]="selectedcivility" (selectionChange)="getSelectedCivility($event)">
+                                </my-dropdown-select>
+                              </div>
+                            </div>
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                              <label class="col-md-4 col-form-label" for="text-input">Nom *</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedTelContact.Last_Name"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Nom" />
+                              </div>
+                            </div>
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                              <label class="col-md-4 col-form-label" for="text-input">Prénom *</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedTelContact.First_Name"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Prénom" />
+                              </div>
+                            </div>
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                              <label class="col-md-4 col-form-label" for="text-input">Fonction</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedTelContact.Role"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Fonction" />
+                              </div>
+                            </div>
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                              <label class="col-md-4 col-form-label" for="phone">TEL *</label>
+                              <div class="col-8">
+                                <input type="tel" pattern="[0-9]{10}" [(ngModel)]="selectedTelContact.Tel1"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="+212xxxxxxxxx" required />
+                              </div>
+                            </div>
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                              <label class="col-md-4 col-form-label" for="phone">GSM</label>
+                              <div class="col-8">
+                                <input type="tel" pattern="[0-9]{10}" [(ngModel)]="selectedTelContact.GSM"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="+212xxxxxxxxx" required />
+                              </div>
+                            </div>
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                              <label class="col-md-4 col-form-label" for="phone">FAX</label>
+                              <div class="col-8">
+                                <input type="tel" pattern="[0-9]{10}" [(ngModel)]="selectedTelContact.Fax"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="+212xxxxxxxxx" required />
+                              </div>
+                            </div>
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                              <label class="col-md-4 col-form-label" for="text-input">Email</label>
+                              <div class="col-8">
+                                <input type="email" [(ngModel)]="selectedTelContact.Email"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="xxxxxxxx@gmail.com" required />
+                              </div>
+                            </div>
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 340px !important">
+                             
+                              <div class="col-12 text-right">
+                                  <button type="button" class="btn btn-danger col-3 mr-2" (click)="reset_tel()">
+                                    Annuler
+                                  </button>
+                                  <button type="button" class="btn btn-primary col-3" (click)="submit_tel()">
+                                   {{ modeTel }}
+                                   </button>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-lg-12">
+                              <my-Tel-Contact-table (modify)="loadTelModify($event)" (delete)="deleteTel($event)" [data]="contact_data"
+                                [isEditPermission]="isEditPermission">
+                              </my-Tel-Contact-table>
+                            </div>
+                          </div>
+                    </div>
+                  </tab>
+                  <tab style="min-height: 600px"  [disabled]="mode=='Ajouter'" (selectTab)="selectTab(2)" [active]="selectedTab == 2">
+                    <ng-template tabHeading><i class="icon-list mr-1"></i> Site
+                      &nbsp;</ng-template>
+                    <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+                    <div class="animated fadeIn">
+                          <div class="card-body">
+                            <input type="hidden" [(ngModel)]="selectedSiteContact.id"
+                                  [ngModelOptions]="{ standalone: true }" />
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                              <label class="col-md-4 col-form-label" for="text-input">Nom *</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedSiteContact.NameSite"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Nom du site" />
+                              </div>
+                            </div>
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                              <label class="col-md-4 col-form-label" for="text-input">Description</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedSiteContact.Description"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Description" />
+                              </div>
+                            </div>
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                              <label class="col-md-4 col-form-label" for="text-input">Adresse</label>
+                              <div class="col-8">
+                                <input type="text" [(ngModel)]="selectedSiteContact.Address"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Adresse" />
+                              </div>
+                            </div>
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                              <label class="col-md-4 col-form-label" for="text-input">Ville</label>
+                              <div class="col-8">
+                                <my-dropdown-select class="form-control" [placeholder]="'Ville Selection'"
+                                  [selectPlaceholder]="'search...'" [options]="devices" [display]="'name'"
+                                  [value]="'dID'" [multiple]="false" [labelCount]="0"
+                                  [selectedOptions]="selectedDeviceModalOption" (selectionChange)="
+                                    getSelectedDeviceModal($event)
+                                  ">
+                                </my-dropdown-select>
+                              </div>
+                            </div>
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                              <label class="col-md-4 col-form-label" for="phone">GPS</label>
+                              <div class="col-8">
+                                <input type="tel" pattern="[0-9]{10}" [(ngModel)]="selectedSiteContact.coordGPS"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Coordonnées GPS" required />
+                              </div>
+                            </div>
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 285px !important">
+                              <label class="col-md-4 col-form-label" for="text-input">Responsable</label>
+                              <div class="col-8">
+                                <input type="email" [(ngModel)]="selectedSiteContact.Responsable"
+                                  [ngModelOptions]="{ standalone: true }" class="form-control"
+                                  placeholder="Responsable" required />
+                              </div>
+                            </div>
+                            <div class="form-group row col-4 d-inline-flex" style="min-width: 340px !important">
+                             
+                              <div class="col-12 text-right">
+                                  <button type="button" class="btn btn-danger col-3 mr-2" (click)="reset_Site()">
+                                    Annuler
+                                  </button>
+                                  <button type="button" class="btn btn-primary col-3" (click)="submit_Site()">
+                                   {{ modeSite }}
+                                   </button>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-lg-12">
+                              <my-Site-Contact-table (modify)="loadSiteModify($event)" (delete)="deleteSite($event)" [data]="Site_data"
+                                [isEditPermission]="isEditPermission">
+                              </my-Site-Contact-table>
+                            </div>
+                          </div>
+                    </div>
+                  </tab>
+                </tabset>
+              </div>
+              <div class="modal-footer" style="justify-content: left; display: initial">
+                <mat-hint class="text-danger">{{ errorMsg }}</mat-hint>
+                <button type="button" class="btn btn-primary float-right" *ngIf="selectedTab=='0'"  (click)="submit()">
+                  {{ mode }}
+                </button>
+                <button type="button" class="btn btn-secondary float-right" (click)="primaryModal.hide()">
+                  Fermer
+                </button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+        <!-- <div [collapse]="isCollapsed" [isAnimated]="true" class="card-body">
+          <form class="form-horizontal">
+            <div class="form-group row">
+              <div class="col-md-5">
+                <div class="controls">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fa fa-car fa-sm"></i></span>
+                    </div>
+                     <my-dropdown-select class="form-control" [placeholder]="'Sélection de véhicule'"
+                      [selectPlaceholder]="'search...'" [options]="[]" [display]="'name'" [value]="'dID'"
+                      [multiple]="false" [labelCount]="0" [selectedOptions]="[]">
+                    </my-dropdown-select> 
+                    <div class="input-group-append">
+                      <span class="input-group-text"><i class="fa fa-key fa-sm"></i></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+               <div class="form-actions">
+                <button type="submit" class="btn btn-sm btn-primary" (click)="loadData()" [disabled]="loading">
+                  <i class="fa fa-dot-circle-o" *ngIf="!loading"></i>
+                  <i class="fa fa-circle-o-notch fa-lg mr-2 fa-spin" *ngIf="loading"></i>
+                  &nbsp;Appliquer
+                </button>
+              </div> 
+            </div>
+          </form>
+        </div> -->
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+  <!--/.row-->
+
+  <div class="row">
+    <div class="col-lg-12">
+      <my-gestionContact-table (modify)="loadModify($event)" (delete)="delete($event)" [data]="data"
+        [isEditPermission]="isEditPermission">
+      </my-gestionContact-table>
+    </div>
+  </div>
+</div>

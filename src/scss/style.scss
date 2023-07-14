@@ -1,0 +1,567 @@
+// If you want to override variables do it here
+@import "variables";
+
+// Import styles
+@import "~@coreui/coreui/scss/coreui";
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+// If you want to add something do it here
+@import "custom";
+
+body {
+    background-color: #f5f5f5;
+}
+
+.dropdown-menu-center {
+    left: 50% !important;
+    right: auto !important;
+    transform: translate(-50%, 0) !important;
+}
+
+#logoutBtn {
+    cursor: pointer;
+}
+
+.leaflet-touch .leaflet-control-layers-toggle {
+    width: 26px;
+    height: 26px;
+    background-size: 20px;
+}
+
+.leaflet-control-container a:hover {
+    text-decoration: none;
+}
+
+.leaflet-touch .leaflet-bar a {
+    width: 26px;
+    height: 26px;
+}
+
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+    border: 1px solid rgb(0 0 0 / 48%);
+    background-clip: padding-box;
+}
+
+.mat-checkbox {
+    padding: 0;
+}
+
+.checkbox-all label {
+    width: 100%;
+    padding: 15px 20px;
+}
+
+.mat-checkbox-layout {
+    width: 100%;
+    padding: 15px 30px;
+    margin: 0;
+}
+
+.mat-checkbox-label {
+    flex-grow: 1;
+}
+
+
+.important-marker {
+    z-index: 9999999999 !important;
+}
+
+.list-vehicules {
+    transition: all 1.5s;
+    overflow-y: hidden;
+
+    .card-header {
+        padding: 5px 5px 10px 5px;
+
+        border-radius: 10px;
+    }
+
+    .card-body {
+        overflow-y: scroll;
+    }
+}
+
+.dropdown-table>div {
+    z-index: 999999999999 !important;
+}
+
+.mcontrol {
+    background: #fff no-repeat 0 0;
+    background-size: 28px 52px;
+    border-radius: 5px;
+    border: 1px solid rgb(0 0 0 / 75%);
+    width: 28px;
+    height: 28px;
+    background-repeat: no-repeat;
+    -webkit-tap-highlight-color: rgba(51, 181, 229, .4);
+}
+
+.mcontrol:focus {
+    outline: none;
+}
+
+#list-vehicules table.mat-table {
+    .mat-sort-header-content {
+        color: rgb(0, 0, 0);
+    }
+
+    td.mat-cell,
+    td.mat-footer-cell {
+        border: 1px solid #ebebeb;
+        padding: 6px 5px 6px;
+        border-width: 0px 1px;
+    }
+}
+
+table.mat-table {
+    .mat-sort-header-content {
+        color: white;
+        font-weight: 700;
+        // font-size: smaller;
+        letter-spacing: 0.4px;
+    }
+
+    tr.mat-header-row {
+        height: auto;
+    }
+
+    th.mat-header-cell,
+    td.mat-cell,
+    td.mat-footer-cell {
+        border: 1px solid #ebebeb;
+        padding: 8px 5px;
+    }
+
+    th {
+        background-color: #28a6ff;
+    }
+
+    .mat-sort-header-arrow {
+        color: #ffffff;
+    }
+
+    th.mat-header-cell:first-child,
+    td.mat-cell:first-child,
+    td.mat-footer-cell:first-child {
+        // border: 0;
+        padding-left: 5px;
+    }
+
+    .mat-cell,
+    .mat-footer-cell {
+        border: 1px solid #ebebeb;
+        font-size: smaller;
+        font-weight: 500;
+    }
+
+    .mat-row:nth-child(even) {
+        background-color: #f4f4f4;
+    }
+}
+
+.btn-sm {
+    line-height: 2;
+}
+
+.modal-content {
+    width: calc(100% - 200px);
+    margin: 50px 100px 50px 100px;
+}
+
+.cdk-overlay-container {
+    z-index: 9999999999999 !important;
+}
+
+@media (min-width: 576px) {
+    .modal-dialog {
+        max-width: initial;
+        margin: 0;
+    }
+}
+
+.form-check-inline {
+    display: inline-flex;
+    align-items: center;
+    padding-left: 0;
+    margin-bottom: 10px;
+    margin-left: 20px;
+}
+
+.card-body1 {
+    padding-top: 48px;
+}
+
+.transition {
+    transition: all .5s;
+}
+
+.loadinger {
+    position: absolute;
+    top: calc(50% - 14vh);
+    left: calc(50% - 9vw);
+    width: 20vw;
+    z-index: 77777;
+}
+
+.detaisTabs {
+    ul li:last-child {
+        position: absolute;
+        right: 15px;
+    }
+}
+
+.card-header:first-child {
+    font-weight: 600;
+}
+
+.nav-tabs {
+    font-weight: 600;
+    font-size: medium;
+}
+
+.cdk-overlay-container {
+    .box-select-all {
+        line-height: 12px;
+    }
+
+    .mat-checkbox-layout {
+        padding: 10px 6px;
+    }
+}
+
+.card-body2 {
+    flex: 1 1 auto;
+    padding: 24px;
+}
+
+.col-form-label1 {
+    margin-right: -60px;
+    padding-top: calc(0.375rem + 1px);
+    padding-bottom: calc(0.375rem + 1px);
+    margin-bottom: 0;
+    font-size: inherit;
+    line-height: 1.5;
+}
+
+.col-form-label2 {
+    margin-right: -130px;
+    padding-top: calc(0.375rem + 1px);
+    padding-bottom: calc(0.375rem + 1px);
+    margin-bottom: 0;
+    font-size: inherit;
+    line-height: 1.5;
+}
+
+.col-form-label3 {
+    margin-left: 40px;
+    margin-right: -20px;
+    padding-top: calc(0.375rem + 1px);
+    padding-bottom: calc(0.375rem + 1px);
+    margin-bottom: 0;
+    font-size: inherit;
+    line-height: 1.5;
+}
+
+.infoBoxCell {
+    padding: 1px 10px;
+    text-align: justify;
+    white-space: normal;
+    vertical-align: middle;
+}
+
+.infoBoxCellTitle {
+    font-weight: bold !important;
+    // border-right: 1px solid #000625;
+    padding: 1px 10px;
+    text-align: justify;
+    vertical-align: baseline;
+}
+
+.infoBoxTable {
+    color: #000000;
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 1em;
+    overflow: hidden;
+    border-spacing: 0;
+}
+
+.leaflet-popup-content {
+    min-width: 500px;
+    max-height: 305px;
+    overflow-y: auto;
+    margin: 5px 5px 5px 5px;
+    line-height: inherit;
+    font-size: inherit;
+    font-size: inherit;
+}
+.leaflet-popup-content :has(> .infoBoxZone) {
+    min-width: 150px;
+}
+
+.leaflet-popup-content:has(.infoBoxZone) {
+    min-width: 150px;
+}
+
+.infoBoxZone{
+    text-align: center;
+    font-size: 18px;
+    line-height: 1.2;
+}
+
+table.infoBoxTable td,
+table.infoBoxTable th {
+    // border-bottom: 1px solid #000625;
+    padding: 5px;
+}
+
+table.infoBoxTable tr:last-child>td {
+    border-bottom: none;
+}
+
+.form-control {
+    color: #000000;
+}
+
+table.infoBoxTable tr:nth-child(odd) {
+    background-color: honeydew;
+}
+
+.status-cercle {
+    margin-right: 5px;
+    font-size: 22px;
+}
+
+.text-red {
+    color: #ff0000 !important;
+}
+
+.text-green {
+    color: #00e04e !important;
+}
+
+.text-blue {
+    color: #009cff !important;
+}
+
+.as-horizontal>.as-split-gutter>.as-split-gutter-icon {
+    height: 55px !important;
+    background-color: #0077c2 !important;
+}
+
+.as-horizontal>.as-split-gutter {
+    background-color: transparent !important;
+}
+
+.as-horizontal>.as-split-gutter {
+    height: 87vh !important;
+}
+
+@supports(-webkit-appearance: none) or (-moz-appearance: none) {
+    input.switch[type='checkbox'] {
+        --active: #0077c2;
+        --active-inner: #fff;
+        --focus: 2px rgba(16, 127, 253, 0.678);
+        --border: #BBC1E1;
+        --border-hover: #0077c2;
+        --background: #fff;
+        --disabled: #F6F8FF;
+        --disabled-inner: #E1E6F9;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        height: 21px;
+        outline: none;
+        display: inline-block;
+        vertical-align: top;
+        position: relative;
+        margin: 0;
+        cursor: pointer;
+        border: 1px solid var(--bc, var(--border));
+        background: var(--b, var(--background));
+        transition: all .3s, border-color .3s, box-shadow .2s;
+
+        &:after {
+            content: '';
+            display: block;
+            left: 0;
+            top: 0;
+            position: absolute;
+            transition: transform var(--d-t, .3s) var(--d-t-e, ease), opacity var(--d-o, .2s);
+        }
+
+        &:checked {
+            --b: var(--active);
+            --bc: var(--active);
+            --d-o: .3s;
+            --d-t: .6s;
+            --d-t-e: cubic-bezier(.2, .85, .32, 1.2);
+        }
+
+        &:disabled {
+            --b: var(--disabled);
+            cursor: not-allowed;
+            opacity: .9;
+
+            &:checked {
+                --b: var(--disabled-inner);
+                --bc: var(--border);
+            }
+
+            &+label {
+                cursor: not-allowed;
+            }
+        }
+
+        &:hover {
+            &:not(:checked) {
+                &:not(:disabled) {
+                    --bc: var(--border-hover);
+                }
+            }
+        }
+
+        &:focus {
+            box-shadow: 0 0 0 var(--focus);
+        }
+
+        &:not(.switch) {
+            width: 21px;
+
+            &:after {
+                opacity: var(--o, 0);
+            }
+
+            &:checked {
+                --o: 1;
+            }
+        }
+
+        &+label {
+            font-size: 14px;
+            line-height: 21px;
+            display: inline-block;
+            vertical-align: top;
+            cursor: pointer;
+            margin-left: 4px;
+        }
+    }
+
+    input.switch[type='checkbox'] {
+        &:not(.switch) {
+            border-radius: 7px;
+
+            &:after {
+                width: 5px;
+                height: 9px;
+                border: 2px solid var(--active-inner);
+                border-top: 0;
+                border-left: 0;
+                left: 7px;
+                top: 4px;
+                transform: rotate(var(--r, 20deg));
+            }
+
+            &:checked {
+                --r: 43deg;
+            }
+        }
+
+        &.switch {
+            width: 38px;
+            border-radius: 11px;
+
+            &:after {
+                left: 2px;
+                top: 2px;
+                border-radius: 50%;
+                width: 15px;
+                height: 15px;
+                background: var(--ab, var(--border));
+                transform: translateX(var(--x, 0));
+            }
+
+            &:checked {
+                --ab: var(--active-inner);
+                --x: 17px;
+            }
+
+            &:disabled {
+                &:not(:checked) {
+                    &:after {
+                        opacity: .6;
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+.nav-tabs .nav-link {
+    border-color: #c8ced3c2;
+}
+
+.nav-link {
+    padding: 0.2rem 1rem;
+}
+
+#map[overlay]>div.leaflet-control-container>div.leaflet-top.leaflet-left>div.leaflet-control:last-child .leaflet-control-layers-toggle {
+    background-image: url('../assets/img/markers/pin.png')!important;
+}
+
+#mapTrajet>div.leaflet-control-container>div.leaflet-top.leaflet-left>div.leaflet-control:nth-child(6)>.leaflet-control-layers-toggle,
+#mapDetails>div.leaflet-control-container>div.leaflet-top.leaflet-left>div.leaflet-control:nth-child(6)>.leaflet-control-layers-toggle  {
+    background-image: url('../assets/img/markers/trip.png')!important;
+}
+// #mapTrajet[overlay]>div.leaflet-control-container>div.leaflet-top.leaflet-left>div.leaflet-control:last-child .leaflet-control-layers-toggle {
+//     background-image: url('../assets/img/markers/trip.png');
+// }
+
+.btn {
+    padding: 0.2rem 0.6rem;
+}
+
+.f-100 {
+    font-size: 100%;
+    color: dimgrey;
+    font-weight: 600;
+}
+
+.popover{
+    min-width: 400px !important;
+}
+.tooltipContainer-1{
+    top: -8px!important;
+    border-top:4px solid red;
+    box-shadow: 0 0.25rem 0.5rem #ff00008f, 0 0.375rem 1.25rem #8000008f;
+}
+.tooltipContainer-2{
+    top: -8px!important;
+    border-top:4px solid orange;
+    box-shadow: 0 0.25rem 0.5rem #ffa6008f, 0 0.375rem 1.25rem #c2840096;
+}
+.tooltipContainer-3{
+    top: -8px!important;
+    border-top:4px solid green;
+    box-shadow: 0 0.25rem 0.5rem #2ce7008f, 0 0.375rem 1.25rem #0080008f;
+}
+
+
+/******* style added ****/
+.sortable-item {
+    padding: 2px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    line-height: 1.2em;
+    text-align: center;
+    cursor: grab;
+    border: 1px solid  #adadad;
+    border-radius: 4px;
+}
+
+.custom-popup .leaflet-popup-content{
+    min-width: 310px;
+    margin: 1px;
+    line-height: inherit;
+    font-size: inherit;
+}

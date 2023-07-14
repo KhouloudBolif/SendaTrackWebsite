@@ -1,0 +1,482 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card card-accent-info">
+        <div class="card-header">
+          <button type="button" *ngIf="isAddPermission" data-toggle="modal" (click)="btnAjouter()" class="btn btn-outline-primary">
+            <i class="fa fa-plus-circle"></i> Ajouter
+          </button>
+          <div class="card-header-actions">
+            <app-dropdown-export (export)="exporter($event)"></app-dropdown-export>
+          </div>
+        </div>
+
+        <!-- /.modal -->
+        <div bsModal #primaryModal="bs-modal" *ngIf="isEditPermission" [config]="{ backdrop: 'static', keyboard: false }" class="modal fade"
+          tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-primary" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Consommation Carburant</h5>
+
+                <button type="button" class="close" (click)="primaryModal.hide()" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body text-nowrap">
+                <div class="animated fadeIn">
+                  <form class="row">
+                    <!-- left col -->
+                    <div class="col-lg-6 d-flex h-full mb-md-0">
+                      <!-- info consommation -->
+                      <div class="card flex-grow-1 pb-md-0">
+                        <div class="card-body">
+                          <!-- dates -->
+                          <div class="form-group row">
+                            <label class="col-md-2 col-form-label" for="text-input">Date</label>
+                            <div class="col">
+                              <input type="datetime-local" id="meeting-time" [(ngModel)]="consommation.dateFillString"
+                                (ngModelChange)="dateSelected()" name="date" class="form-control" />
+                            </div>
+                          </div>
+
+                          <!-- matricule -->
+                          <div class="form-group row">
+                            <label class="col-md-2 col-form-label" for="select1">Matricule</label>
+                            <div class="col input-group">
+                              <my-dropdown-select class="form-control" [placeholder]="'Vehicules Selection'"
+                                [selectPlaceholder]="'search...'" [options]="devices" [display]="'name'" [value]="'dID'"
+                                [multiple]="false" [labelCount]="0" [selectedOptions]="selectedDeviceModalOption"
+                                (selectionChange)="
+                                  getSelectedDeviceModal($event)
+                                ">
+                              </my-dropdown-select>
+                            </div>
+                          </div>
+
+                          <!-- Driver -->
+                          <div class="form-group row">
+                            <label class="col-md-2 col-form-label" for="select2">Conducteur</label>
+                            <div class="col input-group">
+                              <my-dropdown-select class="form-control" [placeholder]="'Driver Selection'"
+                                [selectPlaceholder]="'search...'" [errorMsg]="errorMessageDevice"
+                                [showErrorMsg]="showErrorDevice" [options]="drivers" [display]="'displayName'"
+                                [value]="'driverID'" [multiple]="false" [labelCount]="0"
+                                [selectedOptions]="selectedDriverOption" (selectionChange)="getSelectedDriver($event)">
+                              </my-dropdown-select>
+                            </div>
+                          </div>
+
+                          <!-- kilometrage -->
+                          <div class="form-group row mb-0">
+                            <!-- precedent -->
+                            <label class="col-md-2 col-form-label" for="text-input">Km precedent</label>
+                            <div class="col input-group">
+                              <input [(ngModel)]="consommation.kmPrecedent" (ngModelChange)="calculateQteMoy()"
+                                type="number" min="0" id="text-input" [disabled]="!editKmPrecedent" name="kmp"
+                                class="form-control" placeholder="0,00" />
+                              <div class="input-group-append">
+                                <span class="input-group-text">
+                                  <input id="s1" type="checkbox" class="switch" [(ngModel)]="editKmPrecedent"
+                                    [ngModelOptions]="{ standalone: true }" />
+                                </span>
+                              </div>
+                            </div>
+
+                            <!-- Actuel -->
+                            <label class="col-md-2 pr-0 col-form-label" for="text-input">Km actuel</label>
+                            <div class="col input-group">
+                              <input [(ngModel)]="consommation.kmEncours" (ngModelChange)="calculateQteMoy()"
+                                type="number" min="0" id="text-input" [disabled]="!editKmEncours" name="kma"
+                                class="form-control" placeholder="0,00" />
+                              <div class="input-group-append">
+                                <span class="input-group-text">
+                                  <input id="s1" type="checkbox" class="switch" [(ngModel)]="editKmEncours"
+                                    [ngModelOptions]="{ standalone: true }" />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div *ngIf="kilometrageErr" class="row mt-3 align-items-center text-danger">
+                            <p class="col">
+                              {{
+                              "Le kilométrage encours doit etre supperieur au kilométrage précédent"
+                              }}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- right col -->
+                    <div class="col-lg-6" style="box-sizing: border-box">
+                      <div class="card pb-md-0">
+                        <div class="card-body">
+                          <!-- societe -->
+                          <div class="form-group row align-items-center">
+                            <label class="col-md-3 col-form-label" for="text-input">Fournisseur</label>
+                            <div class="col">
+                              <input type="text" id="text-input" #societe [(ngModel)]="consommation.fournisseur"
+                                name="societe" class="form-control" />
+                            </div>
+                          </div>
+
+                          <!-- n bon, carte -->
+                          <div class="form-group row align-items-center">
+                            <!-- carte -->
+                            <label class="col-md-3 col-form-label" for="text-input">N° carte</label>
+                            <div class="col-md-3">
+                              <input type="text" id="text-input" #carte name="carte" [(ngModel)]="consommation.numCarte"
+                                class="form-control" />
+                            </div>
+
+                            <!-- n bon -->
+                            <label class="col-md-3 col-form-label" for="text-input">N° de Bon</label>
+                            <div class="col-md-3">
+                              <input type="text" id="text-input" #numb name="numbon" [(ngModel)]="consommation.numBon"
+                                class="form-control" />
+                            </div>
+                          </div>
+
+                          <!-- plein qte-->
+                          <div class="form-group row align-items-center">
+                            <!-- qte -->
+                            <label class="col-md-3 col-form-label" for="text-input">Qte (L)</label>
+                            <div class="input-group col">
+                              <input [(ngModel)]="consommation.qte" (ngModelChange)="calculateQteMoy()" type="number"
+                                min="0" id="text-input" #qte name="qte" class="form-control" placeholder="0,000" />
+                              <!-- plein -->
+                              <div class="input-group-append">
+                                <span class="input-group-text">
+                                  <input id="s1" type="checkbox" class="switch" [(ngModel)]="consommation.pleinOn"
+                                    [ngModelOptions]="{ standalone: true }" (ngModelChange)="pleincheckbox()" /><label
+                                    for="s1" class="mr-2 my-2 my-md-0">
+                                    Plein</label>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- montants -->
+                          <div class="form-group row align-items-center">
+                            <label class="col-md-3 col-form-label" for="text-input">Montant T.T.C</label>
+                            <div class="col-md-2">
+                              <input [(ngModel)]="consommation.montantTTC" type="number" min="0" id="text-input" #ttc
+                                name="ttc" class="form-control" placeholder="0,00"
+                                (ngModelChange)="calculMontantHT()" />
+                            </div>
+
+                            <!-- TVA -->
+                            <div class="col row">
+                              <label class="col-md-4 col-form-label">TVA</label>
+                              <div class="col-md">
+                                <my-dropdown-select class="form-control" [placeholder]="'TVA'"
+                                  [selectPlaceholder]="'search...'" [errorMsg]="errorMessageDevice"
+                                  [showErrorMsg]="showErrorDevice" [options]="tvas" [value]="'value'"
+                                  [display]="'value'" [multiple]="false" [labelCount]="0" [selectedOptions]="tvaOption"
+                                  (selectionChange)="getSelectedTva($event)">
+                                </my-dropdown-select>
+                              </div>
+                            </div>
+
+                            <label class="col-md-2 col-form-label" for="text-input">Montant H.T</label>
+                            <div class="col-md-2">
+                              <input [(ngModel)]="consommation.montant" type="number" min="0" id="text-input" #ht
+                                name="ht" class="form-control" placeholder="0,00"
+                                (ngModelChange)="calculMontantTTC()" />
+                            </div>
+                          </div>
+
+                          <!-- consommation Moyenne -->
+                          <div *ngIf="consommation.pleinOn"
+                            class="form-group row align-items-center mb-0 justify-content-end">
+                            <label class="col-md-2 pl-md-0 my-0 offset-md-2" for="text-input">Consom Moy</label>
+                            <div style="background-color: #2962ff"
+                              class="text-center rounded mx-3 col-md-4 py-2 text-white">
+                              <span>{{
+                                consommation.consoM | number: "1.0-2"
+                                }}
+                                %</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div *ngIf="errorMsg != ''" class="col text-danger">
+                      <p class="col">
+                        {{ errorMsg }}
+                      </p>
+                    </div>
+
+                    <!-- observation -->
+                    <div class="col-lg-12">
+                      <div class="card-body">
+                        <div class="w-100 d-flex flex-column">
+                          <label class="" for="text-input">Observations</label>
+                          <div class="w-100">
+                            <textarea type="text" [(ngModel)]="consommation.observation" id="textarea-input" rows="5"
+                              #observ name="textarea-input" class="form-control"></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-danger" (click)="primaryModal.hide()">
+                  &nbsp; Annuler
+                </button>
+                <button type="button" class="btn btn-primary" (click)="submit()">
+                  {{ mode }}
+                </button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+
+        <!-- devices table -->
+        <div [collapse]="isCollapsed" [isAnimated]="true" class="card-body">
+          <form class="form-horizontal" (submit)="loadData(false)">
+            <div class="form-group row">
+              <div class="col-md-5">
+                <my-daterangepicker #calendar [ngModelOptions]="{ standalone: true }" [(ngModel)]="value"
+                  [options]="myDateRangePickerOptions"></my-daterangepicker>
+              </div>
+
+              <div class="col-md-3">
+                <div class="controls">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fa fa-car fa-sm"></i></span>
+                    </div>
+                    <my-dropdown-select class="form-control" [placeholder]="'Vehicle Selection'"
+                      [selectPlaceholder]="'search...'" [errorMsg]="errorMessageDevice" [showErrorMsg]="showErrorDevice"
+                      [options]="devices" [display]="'name'" [value]="'dID'" [multiple]="false" [labelCount]="0"
+                      [selectedOptions]="selectedDevices" (selectionChange)="getSelectedDevices($event)">
+                    </my-dropdown-select>
+                    <div class="input-group-append">
+                      <span class="input-group-text"><i class="fa fa-key fa-sm" *ngIf="selectedDevice == null"></i><i
+                          *ngIf="selectedDevice != null">{{
+                          selectedDevice
+                          }}</i></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-sm btn-primary" [disabled]="loading">
+                  <i class="fa fa-dot-circle-o" *ngIf="!loading"></i>
+                  <i class="fa fa-circle-o-notch fa-lg mr-2 fa-spin" *ngIf="loading"></i>
+                  &nbsp;Appliquer
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+   <tabset>
+    <tab style="min-height: 600px" (selectTab)="selectTab(0)" [active]="selectedTab==0">
+      <ng-template tabHeading>
+        <i class="icon-list mr-1"></i> Informations d'accident &nbsp;
+      </ng-template>
+      <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+      <div class="row">
+        <div class="col-lg-12 col-md-12">
+          <my-gestioncarburant-table [data]="data" (modify)="loadConsomToModify($event)"
+        (delete)="deleteConsommation($event)" [isEditPermission]="isEditPermission">
+      </my-gestioncarburant-table>
+        </div>
+      </div>
+    </tab>
+
+    <tab style="min-height: 600px;">
+      <ng-template tabHeading>
+        <i class="icon-list mr-1"></i>  Les graphes &nbsp;
+      </ng-template>
+      <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+      <div class="row" style="display: flex;">
+        <div class="col-lg-3 ">
+          <br>
+          <h2 align="center" style="color: gray;">Stock Carburant</h2>
+         <br>
+          <div class="card">
+          <canvas id="piechart"  width="400" height="300"></canvas></div>
+
+       </div>
+
+
+
+
+        <div class="col-lg-3">
+          <br>
+          <h2 align="center" style="color: gray;">Stock Adblue</h2>
+<br>
+<div class="card">
+          <canvas id="pichart" width="400" height="300"></canvas></div>
+       </div>
+       <div class="col-lg-3"  >
+        <br>
+        <h2 align="center" style="color: gray;">Qte/Montant</h2>
+        <br>
+<div class="card" >
+        <canvas id="first"  width="400" height="300"></canvas></div>
+     </div>
+     <div class="col-lg-3"  >
+      <br>
+      <h2 align="center" style="color: gray;">Km</h2>
+      <br>
+<div class="card" >
+      <canvas id="last"  width="400" height="300"></canvas></div>
+   </div>
+
+      </div>
+      <br>
+
+    </tab>
+    <tab style="min-height: 600px" (selectTab)="selectTab(1)" [active]="selectedTab==1">
+      <ng-template tabHeading>
+        <i class="icon-list mr-1"></i> Details de livraisons &nbsp;
+      </ng-template>
+      <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+      <div class="row">
+        <div class="col-lg-12 col-md-12">
+          <div class="container">
+            <table class="table table-striped table-bordered ">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th class="text-blue">Bon</th>
+                  <th class="text-blue">Date</th>
+                  <th class="text-blue">Livraison</th>
+                  <th class="text-blue">Article</th>
+                  <th class="text-blue">Consommation</th>
+                  <th class="text-blue">Solde</th>
+                  <th class="text-blue">Gsl/</th>
+                  <th class="text-blue">Bon de livraison</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of tableauDonnees">
+                  <td>{{ item.id }}</td>
+                  <td>{{ item.colonne1 }}</td>
+                  <td>{{ item.colonne2 }}</td>
+                  <td>{{ item.colonne3 }}</td>
+                  <td>{{ item.colonne4 }}</td>
+                  <td>{{ item.colonne5 }}</td>
+                  <td>{{ item.colonne6 }}</td>
+                  <td>{{ item.colonne7 }}</td>
+                  <td>{{ item.colonne8 }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+
+        </div>
+      </div>
+    </tab>
+    <tab style="min-height: 600px" (selectTab)="selectTab(2)" [active]="selectedTab==2">
+      <ng-template tabHeading>
+        <i class="icon-list mr-1"></i> Gasoil/Adblue &nbsp;
+      </ng-template>
+      <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+      <div class="row">
+        <div class="col-lg-6 col-md-6">
+          <div class="container">
+            <table class="table table-striped table-bordered ">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th class="text-blue " >Bon</th>
+                  <th class="text-blue ">Date</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of tableauDonnees">
+                  <td >{{ item.id }}</td>
+                  <td >{{ item.colonne1 }}</td>
+                  <td >{{ item.colonne2 }}</td>
+
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+
+        </div>
+        <div class="col-lg-6 col-md-6">
+          <div class="container">
+            <table class="table table-striped table-bordered ">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th class="text-blue">Bon</th>
+                  <th class="text-blue">Date</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of tableauDonnees">
+                  <td>{{ item.id }}</td>
+                  <td>{{ item.colonne1 }}</td>
+                  <td>{{ item.colonne2 }}</td>
+
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+
+        </div>
+      </div>
+    </tab>
+    <tab style="min-height: 600px" (selectTab)="selectTab(3)" [active]="selectedTab==3">
+      <ng-template tabHeading>
+        <i class="icon-list mr-1"></i> liste des comptes &nbsp;
+      </ng-template>
+      <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+      <div class="row">
+        <div class="col-lg-6 col-md-6">
+          <div class="container">
+            <table class="table table-striped table-bordered   ">
+              <thead>
+                <tr>
+
+                  <th class="text-blue text-center" colspan="2" >Liste des comptes</th>
+
+
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of tableauDonnees">
+
+                  <td >{{ item.colonne1 }}</td>
+                  <td >{{ item.colonne2 }}</td>
+
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+
+        </div>
+
+      </div>
+    </tab>
+  </tabset>
+</div>
+<!--/.col-->
+
+<!--/.row-->
+
+</div>
+</div>

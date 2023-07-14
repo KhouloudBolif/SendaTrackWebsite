@@ -1,0 +1,223 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card card-accent-info">
+        <div class="card-header">
+          <button type="button" data-toggle="modal" *ngIf="isAddPermission" (click)="showAddModal()" class="btn btn-outline-primary"><i
+              class="fa fa-plus-circle"></i> Ajouter une Alerte</button>
+          <div class="card-header-actions">
+            <button class="btn text-primary mr-2" (click)="loadData()" [disabled]="loading">
+              <i class="fa fa-dot-circle-o" *ngIf="!loading"></i>
+              <i class="fa fa-circle-o-notch fa-lg mr-1 fa-spin" *ngIf="loading"></i> &nbsp;Actualiser
+            </button>
+            <app-dropdown-export (export)="exporter($event)" ></app-dropdown-export>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/.col-->
+    </div>
+    <!--/.row-->
+
+
+    <div class="row">
+      <div class="col-lg-12">
+        <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+        <my-gestion-notifs-rules-table (modify)="loadModify($event)" (delete)="delete($event)" [data]="data"  [isEditPermission]="isEditPermission">
+        </my-gestion-notifs-rules-table>
+      </div>
+    </div>
+    </div>
+
+    <div bsModal #primaryModal="bs-modal" *ngIf="isEditPermission" [config]="{backdrop: 'static', keyboard: false}" class="modal fade" tabindex="-1"
+      role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-primary" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+        <h5 class="modal-title">{{mode}} Rule</h5>
+        <button type="button" class="close" (click)="primaryModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <mat-progress-bar mode="indeterminate" *ngIf="modalLoading"></mat-progress-bar>
+        <div class="animated fadeIn">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="card-body">
+                <!-- <div class="form-group row">
+                  <label class=" col-md-4 col-form-label">Identifiant *</label> -->
+                  <!-- <div class="col-8 input-group">
+                    <input type="text" class="form-control" [disabled]="mode=='Modifier'?'true':'false'" [(ngModel)]="selectedAlert.ruleID"
+                      [ngModelOptions]="{standalone: true}" placeholder="Saisir un identifiant"> -->
+                      <input type="hidden" [(ngModel)]="selectedAlert.ruleID" [ngModelOptions]="{standalone: true}">
+                    <!-- </div>
+                    </div> -->
+                    <div class="form-group row">
+                      <label class="col-md-4 col-form-label" for="text-input">Actif</label>
+                      <div class="col-8">
+
+                    <input id="s1" type="checkbox" [(ngModel)]="selectedAlert.isActive" [ngModelOptions]="{standalone: true}"
+                      class="switch" />
+                    <label for="s1" class="ml-2">{{selectedAlert.isActive?'Activé':'Désactivé'}}
+                      &nbsp;</label>
+                  </div>
+                  </div>
+                  <div class="form-group row" *ngIf="mode=='Modifier'">
+                    <label class="col-md-4 col-form-label" for="text-input">Date de creation</label>
+                    <div class="col-8">
+                    <input type="text" class="form-control" [disabled]="'true'" [(ngModel)]="selectedAlert.creationTime"
+                      [ngModelOptions]="{standalone: true}">
+                  </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-md-4 col-form-label" for="text-input">Description *</label>
+                    <div class="col-8">
+                    <input type="text" class="form-control" [(ngModel)]="selectedAlert.description" [ngModelOptions]="{standalone: true}"
+                      placeholder="Saisir une Description">
+                    </div>
+                    </div>
+                    <div class="container p-2 rounded border">
+                      <!-- <label>Rule:</label> -->
+                      <div class="row mt-1">
+                        <div class="col-6">
+                          <input (change)="interpret()" class="form-check-input switch" type="checkbox" id="sw1" [(ngModel)]="rules[0]"
+                            [ngModelOptions]="{standalone: true}"><label for="sw1" class="ml-2">
+                            Démarrage&nbsp;</label>
+                        </div>
+                      </div>
+                      <div class="row mt-1">
+                        <div class="col-4">
+                          <input (change)="interpret()" class="form-check-input switch" type="checkbox" id="sw2" [(ngModel)]="rules[1]"
+                            [ngModelOptions]="{standalone: true}">
+                          <label for="sw2" class="ml-2">
+                            Maximum
+                            vitesse&nbsp;</label>
+
+                        </div> <input (change)="interpret()" type="number"  min="0"  [disabled]="!rules[1]?'true':'false'" min="20" max="400"
+                          class="form-control col-6" [(ngModel)]="rulesValues[0]" [ngModelOptions]="{standalone: true}">
+                      </div>
+                      <div class="row mt-1">
+                        <div class="col-4">
+                          <input (change)="interpret()" class="form-check-input switch" type="checkbox" id="sw3" [(ngModel)]="rules[2]"
+                            [ngModelOptions]="{standalone: true}">
+                          <label for="sw3" class="ml-2"> In Zone&nbsp;</label>
+                        </div>
+                        <my-dropdown-select class="form-control col-6" [ngClass]="rules[2]? '': 'bg-secondary'" [disabled]="!rules[2]"
+                          [selectPlaceholder]="'Chercher...'" [options]="POIs" [display]="'name'" [value]="'val'" [multiple]="false"
+                          [labelCount]="1" [selectedOptions]="selectedPois1" (selectionChange)="onPoiChange1($event)">
+                        </my-dropdown-select>
+                      </div>
+                      <div class="row mt-1">
+                        <div class="col-4">
+                          <input (change)="interpret()" class="form-check-input switch" type="checkbox" id="sw4" [(ngModel)]="rules[3]"
+                            [ngModelOptions]="{standalone: true}">
+                          <label for="sw4" class="ml-2">
+                            Depart&nbsp;</label>
+                        </div>
+                        <my-dropdown-select class="form-control col-6" [ngClass]="rules[3]? '': 'bg-secondary'" [disabled]="!rules[3]"
+                          [selectPlaceholder]="'Chercher...'" [options]="POIs" [display]="'name'" [value]="'val'" [multiple]="false"
+                          [labelCount]="1" [selectedOptions]="selectedPois2" (selectionChange)="onPoiChange2($event)">
+                        </my-dropdown-select>
+                      </div>
+                      <div class="row mt-1">
+                        <div class="col-4">
+                          <input (change)="interpret()" class="form-check-input switch" type="checkbox" id="sw5" [(ngModel)]="rules[5]"
+                            [ngModelOptions]="{standalone: true}">
+                          <label for="sw5" class="ml-2">
+                            Arrive&nbsp;</label>
+                        </div>
+                        <my-dropdown-select class="form-control col-6" [ngClass]="rules[5]? '': 'bg-secondary'" [disabled]="!rules[5]"
+                          [selectPlaceholder]="'Chercher...'" [options]="POIs" [display]="'name'" [value]="'val'" [multiple]="false"
+                          [labelCount]="1" [selectedOptions]="selectedPois3" (selectionChange)="onPoiChange3($event)">
+                        </my-dropdown-select>
+                      </div>
+                      <div class="row mt-1">
+                        <div class="col-4">
+                          <input (change)="interpret()" class="form-check-input switch" type="checkbox" id="sw6" [(ngModel)]="rules[4]"
+                            [ngModelOptions]="{standalone: true}">
+                          <label for="sw6" class="ml-2">
+                            Fuel (%)&nbsp;</label>
+                        </div> <input type="number" (change)="interpret()" min="0" max="100" [disabled]="!rules[4]?'true':'false'"
+                          class="form-control col-6" [(ngModel)]="rulesValues[1]" [ngModelOptions]="{standalone: true}">
+                      </div>
+                  <input type="text" [(ngModel)]="resultedRule" (change)="reverse_operation(resultedRule)"
+                    [ngModelOptions]="{standalone: true}" class="form-control col-12 mt-2">
+                </div>
+                </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="card-body">
+                    <div class="form-group row">
+                      <label class="col-md-4 col-form-label">Email de notification</label>
+                      <div class="col-8">
+                    <input type="email" class="form-control" [(ngModel)]="selectedAlert.notifyEmail" [ngModelOptions]="{standalone: true}"
+                      placeholder="xxxxxxxx@mail.com">
+                    </div>
+                    </div>
+                    <div class="form-group row">
+                  <label class=" col-md-4 col-form-label">Minimum Interval:</label>
+                  <div class="col-8">
+                    <input type="number" class="form-control"  min="0"  [(ngModel)]="selectedAlert.minNotifyAge" [ngModelOptions]="{standalone: true}"
+                      placeholder="Choisir le Minimum Interval">
+                    </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-4 col-form-label" for="text-input">Cron rule</label>
+                      <div class="col-8">
+                        <my-dropdown-select class="form-control col-4" [selectPlaceholder]="'Chercher...'" [options]="crons_rule"
+                          [display]="'name'" [value]="'val'" [multiple]="false" [labelCount]="1" [selectedOptions]="selectedAlert.ruleTag"
+                          (selectionChange)="getSelectedCron($event)">
+                        </my-dropdown-select>
+                      </div>
+                    </div>
+                    <div class="container p-2 rounded border">
+                      <!-- <label>Véhicule/StatusCode Selection:</label> -->
+                      <div class="row mt-1">
+                        <div class="col-4">
+                          <label class="ml-2"> Par Véhicule ID&nbsp;</label>
+                        </div>
+                        <my-dropdown-select class="form-control col-6"
+                          [ngClass]="selectedAlert.g==null || selectedAlert.g=='-'? '': 'bg-secondary'"
+                          [disabled]="selectedAlert.g!=null && selectedAlert.g!='-'" [selectPlaceholder]="'Chercher...'" [options]="devices"
+                          [display]="'name'" [value]="'dID'" [multiple]="false" [labelCount]="1" [selectedOptions]="selectedVs"
+                          (selectionChange)="getSelectedV($event)">
+                        </my-dropdown-select>
+                      </div>
+                  <div class="row mt-1">
+                    <div class="col-4">
+                      <label class="ml-2"> Par Group ID&nbsp;</label>
+                    </div>
+                    <my-dropdown-select class="form-control col-6"
+                      [ngClass]="selectedAlert.v==null || selectedAlert.v=='-'? '': 'bg-secondary'"
+                      [disabled]="selectedAlert.v!=null && selectedAlert.v!='-'" [selectPlaceholder]="'Chercher...'" [options]="groups"
+                      [display]="'description'" [value]="'groupID'" [multiple]="false" [labelCount]="1" [selectedOptions]="selectedGs"
+                      (selectionChange)="getSelectedGroup($event)">
+                    </my-dropdown-select>
+                    </div>
+                  <div class="row mt-1">
+                    <div class="col-4">
+                      <label class="ml-2"> Code d'etat&nbsp;</label>
+                    </div>
+                    <my-dropdown-select class="form-control col-6"
+                      [ngClass]="(selectedAlert.g==null || selectedAlert.g=='-') && (selectedAlert.v==null || selectedAlert.v=='-')? 'bg-secondary': ''"
+                      [disabled]="(selectedAlert.g==null || selectedAlert.g=='-') && (selectedAlert.v==null || selectedAlert.v=='-')"
+                      [selectPlaceholder]="'Chercher...'" [options]="cnst.statusCodes" [display]="'name'" [value]="'val'" [multiple]="false"
+                      [labelCount]="1" [selectedOptions]="selectedSs" (selectionChange)="getSelectedS($event)">
+                    </my-dropdown-select>
+                    </div>
+                </div>
+
+                </div>
+                </div>
+                </div>
+                </div>
+                </div>
+                <div class="modal-footer" style="justify-content: left;display: initial;">
+                  <mat-hint class="text-danger">{{errorMsg}}</mat-hint>
+                  <button type="button" class="btn btn-primary float-right" (click)="submit()">{{mode}}</button>
+                  <button type="button" class="btn btn-secondary float-right" (click)="primaryModal.hide()">Fermer</button>
+                </div>
+                </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+                </div><!-- /.modal -->
